@@ -113,7 +113,7 @@ exports.getApiByIdOrSlug = async (req, res) => {
 // Add a new API to the catalog
 exports.addApi = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     
     // In a real application, check if user is an admin
     // For now, assuming any authenticated user can add APIs
@@ -181,7 +181,7 @@ exports.addApi = async (req, res) => {
 // Update an API
 exports.updateApi = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     
     // In a real application, check if user is an admin
     
@@ -239,7 +239,7 @@ exports.updateApi = async (req, res) => {
 // Delete (deactivate) an API
 exports.deleteApi = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     
     // In a real application, check if user is an admin
     

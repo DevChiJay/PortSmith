@@ -6,6 +6,7 @@ const { requireAuth } = require('../middleware/auth');
 // Public routes
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/refresh', authController.refreshToken);
 
 // Handler for unauthorized requests
 router.get('/unauthorized', (req, res) => {
@@ -15,7 +16,8 @@ router.get('/unauthorized', (req, res) => {
   });
 });
 
-// Protected routes
+// Protected routes (require JWT authentication)
 router.get('/me', requireAuth, authController.getCurrentUser);
+router.post('/logout', requireAuth, authController.logout);
 
 module.exports = router;

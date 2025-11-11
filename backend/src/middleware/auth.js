@@ -1,72 +1,170 @@
-const { requireAuth: clerkRequireAuth, getAuth } = require('@clerk/express');
+const { verifyAccessToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 
-// Middleware to handle Clerk authentication with JSON responses
+/**
+ * Middleware to handle JWT authentication
+ * Extracts JWT from Authorization header, verifies it, and attaches user to request
+ */
 const requireAuth = (req, res, next) => {
-  // Get auth data from Clerk
-  const { userId } = getAuth(req);
-  
-  // If no userId, user is not authenticated
-  if (!userId) {
-    logger.warn(`Unauthenticated access attempt to ${req.originalUrl}`);
+  try {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      logger.warn(`Missing or invalid Authorization header for ${req.originalUrl}`);
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Authentication required. Please provide a valid Bearer token.'
+      });
+    }
+
+    // Extract token (remove 'Bearer ' prefix)
+    const token = authHeader.substring(7);
+    
+    if (!token) {
+      logger.warn(`Empty token in Authorization header for ${req.originalUrl}`);
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Authentication token is required'
+      });
+    }
+
+    // Verify token
+    const decoded = verifyAccessToken(token);
+    
+    // Attach user info to request object
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role
+    };
+    
+    // Also set userId for backward compatibility
+    req.userId = decoded.userId;
+    
+    logger.debug(`User ${decoded.userId} authenticated successfully for ${req.originalUrl}`);
+    next();
+  } catch (error) {
+    logger.warn(`Authentication failed for ${req.originalUrl}: ${error.message}`);
+    
+    // Handle specific error cases
+    if (error.message === 'Token expired') {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Token has expired. Please login again.',
+        code: 'TOKEN_EXPIRED'
+      });
+    }
+    
+    if (error.message === 'Invalid token') {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Invalid authentication token',
+        code: 'INVALID_TOKEN'
+      });
+    }
+    
     return res.status(401).json({
       error: 'Unauthorized',
-      message: 'Authentication required to access this resource'
+      message: 'Authentication failed'
     });
   }
-  
-  // Add userId to req for easier access in controllers
-  req.userId = userId;
-  
-  // Also set user object for backward compatibility
-  req.user = { id: userId };
-  
-  next();
 };
 
-// Optional: Middleware for admin-only routes
+/**
+ * Middleware for admin-only routes
+ * Requires valid JWT with admin role
+ */
 const requireAdmin = (req, res, next) => {
-  // Get auth data from Clerk
-  const { userId, sessionClaims } = getAuth(req);
-  
-  // Check authentication
-  if (!userId) {
-    logger.warn(`Unauthenticated access attempt to admin route ${req.originalUrl}`);
+  try {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      logger.warn(`Missing or invalid Authorization header for admin route ${req.originalUrl}`);
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Authentication required. Please provide a valid Bearer token.'
+      });
+    }
+
+    // Extract token (remove 'Bearer ' prefix)
+    const token = authHeader.substring(7);
+    
+    if (!token) {
+      logger.warn(`Empty token in Authorization header for admin route ${req.originalUrl}`);
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Authentication token is required'
+      });
+    }
+
+    // Verify token
+    const decoded = verifyAccessToken(token);
+    
+    // Check if user has admin role
+    if (decoded.role !== 'admin') {
+      logger.warn(`Non-admin user ${decoded.userId} (${decoded.email}) attempted to access admin route ${req.originalUrl}`);
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Admin access required for this resource'
+      });
+    }
+    
+    // Attach user info to request object
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role
+    };
+    
+    // Also set userId for backward compatibility
+    req.userId = decoded.userId;
+    
+    logger.debug(`Admin user ${decoded.userId} authenticated successfully for ${req.originalUrl}`);
+    next();
+  } catch (error) {
+    logger.warn(`Admin authentication failed for ${req.originalUrl}: ${error.message}`);
+    
+    // Handle specific error cases
+    if (error.message === 'Token expired') {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Token has expired. Please login again.',
+        code: 'TOKEN_EXPIRED'
+      });
+    }
+    
+    if (error.message === 'Invalid token') {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Invalid authentication token',
+        code: 'INVALID_TOKEN'
+      });
+    }
+    
     return res.status(401).json({
       error: 'Unauthorized',
-      message: 'Authentication required to access this resource'
+      message: 'Authentication failed'
     });
   }
-  
-  // Check admin role
-  if (!sessionClaims || sessionClaims.role !== 'admin') {
-    logger.warn(`Non-admin user ${userId} attempted to access admin route ${req.originalUrl}`);
-    return res.status(403).json({
-      error: 'Forbidden',
-      message: 'Admin access required for this resource'
-    });
-  }
-  
-  // Add userId to req for easier access in controllers
-  req.userId = userId;
-  
-  // Also set user object for backward compatibility
-  req.user = { id: userId };
-  
-  next();
 };
 
-// Helper to get the current authenticated user from request
+/**
+ * Helper to get the current authenticated user from request
+ * Note: This assumes requireAuth middleware has already run
+ * @param {Object} req - Express request object
+ * @returns {Object|null} User object or null
+ */
 const getCurrentUser = (req) => {
-  const auth = getAuth(req);
-  if (!auth || !auth.userId) {
+  if (!req.user) {
     return null;
   }
   
   return {
-    id: auth.userId,
-    // Other user details will need to be fetched from Clerk
-    // using clerkClient.users.getUser(auth.userId)
+    id: req.user.id,
+    email: req.user.email,
+    role: req.user.role
   };
 };
 

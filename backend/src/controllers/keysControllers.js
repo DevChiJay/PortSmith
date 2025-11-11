@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 // Get all keys for the authenticated user
 exports.getUserKeys = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const keys = await keyManagementService.getUserKeys(userId);
     
     // Filter out sensitive data from the response
@@ -33,7 +33,7 @@ exports.getUserKeys = async (req, res) => {
 // Get a specific key by ID
 exports.getKeyById = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const key = await keyManagementService.getKeyById(req.params.id, userId);
     
     res.json({
@@ -70,7 +70,7 @@ exports.generateKey = async (req, res) => {
       });
     }
     
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const keyData = { apiId, name, permissions, rateLimit, expiresAt };
     
     const newKey = await keyManagementService.generateKey(userId, keyData);
@@ -100,7 +100,7 @@ exports.generateKey = async (req, res) => {
 // Revoke an API key
 exports.revokeKey = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const keyId = req.params.id;
     
     const revokedKey = await keyManagementService.revokeKey(keyId, userId);
@@ -124,7 +124,7 @@ exports.revokeKey = async (req, res) => {
 // Update an API key
 exports.updateKey = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const keyId = req.params.id;
     const { name, status, permissions, rateLimit, expiresAt } = req.body;
     
@@ -155,7 +155,7 @@ exports.updateKey = async (req, res) => {
 // Get usage metrics for a specific key
 exports.getKeyMetrics = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // MongoDB ObjectId from JWT
     const keyId = req.params.id;
     
     // Ensure the key belongs to this user
