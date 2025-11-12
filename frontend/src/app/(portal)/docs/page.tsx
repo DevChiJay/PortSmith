@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Head from "next/head";
 
-import { useApiData } from "@/src/hooks/use-api-data";
-import { RequestApiModal } from "@/src/components/request-api-modal";
-import DocSkeleton from "@/src/components/Docs/DocSkeleton";
-import Sidebar from "@/src/components/Docs/Sidebar";
-import Main from "@/src/components/Docs/Main";
-import { Api } from "@/src/components/Docs/types";
+import { useApiData } from "@/hooks/use-api-data";
+import { RequestApiModal } from "@/components/request-api-modal";
+import DocSkeleton from "@/components/Docs/DocSkeleton";
+import Sidebar from "@/components/Docs/Sidebar";
+import Main from "@/components/Docs/Main";
+import { Api } from "@/components/Docs/types";
 
 export default function DocsPage() {
   const [searchQuery, setSearchQuery] = useState("");

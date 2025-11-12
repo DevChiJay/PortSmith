@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useActionState } from "react";
-import { useToast } from "@/src/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
-import { Button } from "@/src/components/ui/button";
-import { Calendar } from "@/src/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -12,21 +12,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/src/components/ui/dialog";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/src/components/ui/popover";
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/components/ui/select";
+} from "@/components/ui/select";
 import { format } from "date-fns";
 import {
   CalendarIcon,
@@ -35,11 +35,11 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
-import { cn } from "@/src/lib/utils";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
 
 interface RequestApiModalProps {
   isOpen: boolean;

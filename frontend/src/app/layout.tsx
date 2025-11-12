@@ -1,15 +1,29 @@
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import { ThemeProvider } from "@/src/components/theme-provider";
-import { Toaster } from "@/src/components/ui/toaster";
-import Head from "next/head";
+import { AuthProvider } from "@/lib/auth-context";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "API Developer Portal",
-  description: "Manage and explore APIs for developers",
+  title: "APISmith - API Developer Portal",
+  description: "Manage and explore APIs for developers with APISmith",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "APISmith - API Developer Portal",
+    description: "Manage and explore APIs for developers with APISmith",
+    images: ["/logo.png"],
+    url: "https://apismith.dev",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "APISmith - API Developer Portal",
+    description: "Manage and explore APIs for developers with APISmith",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
@@ -18,25 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <Head>
-          <link rel="icon" href="/favicon.ico" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta name="description" content="Manage and explore APIs for developers" />
-          <meta property="og:title" content="API Developer Portal" />
-          <meta property="og:description" content="Manage and explore APIs for developers" />
-          <meta property="og:image" content="/logo.png" />
-          <meta property="og:url" content="https://portal.devchihub.com" />
-          <meta name="twitter:card" content="summary_large_image" />
-        </Head>
-        <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
             <Toaster />
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

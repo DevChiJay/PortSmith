@@ -1,16 +1,17 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
-import { Badge } from "@/src/components/ui/badge";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ExternalLink, FileText } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
 import { Api } from "./types";
 
 export function ApiCard({ api, onRequestClick }: { 
   api: Api; 
   onRequestClick: (api: Api) => void;
 }) {
-  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const isSignedIn = isAuthenticated;
   const isNewApi = api.updated && (new Date(api.updated) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
 
   return (

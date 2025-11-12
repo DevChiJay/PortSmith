@@ -1,11 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
-import { Label } from "@/src/components/ui/label";
-import { Input } from "@/src/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { toast } from "@/src/components/ui/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/use-toast";
 import { ApiInfo, CreateKeyDialogProps } from "./types";
 
 export function CreateKeyDialog({ isOpen, onOpenChange, availableApis, refetch, user }: CreateKeyDialogProps) {

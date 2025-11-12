@@ -1,8 +1,8 @@
 import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
-import { ApiCard } from "@/src/components/Docs/ApiCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ApiCard } from "@/components/Docs/ApiCard";
 import { MainProps } from "./types";
 
 function Main({

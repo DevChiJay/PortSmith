@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
 
 import { Button } from "./ui/button";
 
 function CTA() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  const isSignedIn = isAuthenticated;
 
   return (
     <section className="py-16 px-4 bg-primary/5 rounded-3xl mx-4 md:mx-10 my-6">

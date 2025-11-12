@@ -3,11 +3,11 @@
 import Link from "next/link"
 import { Key, Settings, ShieldCheck, Users } from "lucide-react"
 
-import { cn } from "@/src/lib/utils"
-import { Button } from "@/src/components/ui/button"
-import { ScrollArea } from "@/src/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "@/src/components/ui/sheet"
-import { useMobile } from "@/src/hooks/use-mobile"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useMobile } from "@/hooks/use-mobile"
 
 const sidebarItems = [
   {

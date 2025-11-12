@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { ChevronDown, ChevronUp, Download, MoreHorizontal, Plus, Search } from "lucide-react"
 
-import { Button } from "@/src/components/ui/button"
-import { Input } from "@/src/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table"
-import { Badge } from "@/src/components/ui/badge"
+} from "@/components/ui/dropdown-menu"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 const users = [
   {

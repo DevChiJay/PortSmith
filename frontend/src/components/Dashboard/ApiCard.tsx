@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { CheckCircle2, ExternalLink, FileText, Lock } from "lucide-react";
-import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiInfo, ApiCardProps } from "./types";
 
 export function ApiCard({ api, onRequestAccess }: ApiCardProps) {

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardFooter, CardHeader } from "@/src/components/ui/card";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function AvailableApisSkeleton() {
   return (

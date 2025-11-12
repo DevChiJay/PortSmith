@@ -1,9 +1,9 @@
 "use client";
 
-import { useApiData } from "@/src/hooks/use-api-data";
-import { useUser } from "@clerk/nextjs";
-import { AvailableApisContent } from "@/src/components/Dashboard/AvailableApisContent";
-import { ApiInfo } from "@/src/components/Dashboard/types";
+import { useApiData } from "@/hooks/use-api-data";
+import { useUser } from "@/hooks/use-user";
+import { AvailableApisContent } from "@/components/Dashboard/AvailableApisContent";
+import { ApiInfo } from "@/components/Dashboard/types";
 
 export default function AvailableApisPage() {
   const { user } = useUser();

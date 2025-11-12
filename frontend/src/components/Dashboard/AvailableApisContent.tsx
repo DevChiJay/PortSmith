@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import { RequestApiModal } from "@/src/components/request-api-modal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RequestApiModal } from "@/components/request-api-modal";
 import { ApiCard } from "./ApiCard";
 import { AvailableApisSkeleton } from "./AvailableApisSkeleton";
 import { ApiInfo, AvailableApisContentProps } from "./types";

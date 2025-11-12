@@ -16,8 +16,14 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// Enable CORS
-app.use(cors());
+// Enable CORS with credentials support
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
+}));
 
 // Request logging
 app.use(logger.httpLogger);

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default function PrivacyPage() {
   return (

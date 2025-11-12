@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
-import { useAuth } from '@clerk/nextjs';
+import { useApiClient } from './use-api-client';
 
 interface ApiDataOptions {
   endpoint: string;
@@ -13,42 +13,26 @@ export function useApiData<T>({ endpoint, method = 'GET', body, dependencies = [
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { getToken } = useAuth();
+  const { request } = useApiClient();
+
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        
-        // Get the user's API key from Clerk
-        const token = await getToken();
-        
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        };
-
-        let response;
-        const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL || '';
-        
-        if (method === 'GET') {
-          response = await axios.get(`${baseUrl}${endpoint}`, config);
-        } else if (method === 'POST') {
-          response = await axios.post(`${baseUrl}${endpoint}`, body, config);
-        } else if (method === 'PUT') {
-          response = await axios.put(`${baseUrl}${endpoint}`, body, config);
-        } else if (method === 'DELETE') {
-          response = await axios.delete(`${baseUrl}${endpoint}`, config);
-        }
-
-        setData(response?.data);
         setError(null);
+        
+        // Use the custom API client for requests
+        const response = await request<T>(endpoint, {
+          method,
+          ...(body && { body: JSON.stringify(body) }),
+        });
+
+        setData(response);
       } catch (err) {
-        const error = err as AxiosError;
-        const errorMessage = error.response?.data?.message || error.message || 'An unknown error occurred';
-        setError(new Error(errorMessage));
+        const error = err as Error;
+        setError(error);
         setData(null);
       } finally {
         setIsLoading(false);
@@ -59,7 +43,11 @@ export function useApiData<T>({ endpoint, method = 'GET', body, dependencies = [
     if (!dependencies.some(dep => dep === undefined || dep === null)) {
       fetchData();
     }
-  }, [...dependencies]);
+  }, [...dependencies, refreshTrigger]);
 
-  return { data, error, isLoading, refetch: () => dependencies.forEach(() => {}) };
+  const refetch = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  return { data, error, isLoading, refetch };
 }

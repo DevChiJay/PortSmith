@@ -1,12 +1,15 @@
+'use client'
+
 import React from "react";
-import { List, Home, Key, Library, Settings } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { ScrollArea } from "@/src/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/src/components/ui/sheet";
-import { Separator } from "@/src/components/ui/separator";
-import { UserButton } from "@clerk/nextjs";
-import { NavLink } from "@/src/components/Dashboard/NavLink";
-import { ModeToggle } from "@/src/components/mode-toggle";
+import { List, Home, Key, Library, Settings, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { NavLink } from "@/components/Dashboard/NavLink";
+import { ModeToggle } from "@/components/mode-toggle";
+import { useAuth } from "@/lib/auth-context";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function MobileNav() {
   return (
@@ -26,16 +29,7 @@ export function MobileNav() {
           <span className="font-semibold">DevChi</span>
         </div>
 
-        <div className="flex items-center gap-1">
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-8 h-8",
-              },
-            }}
-          />
-        </div>
+        <MobileUserMenu />
       </div>
 
       <SheetContent side="left" className="w-[240px] sm:w-[280px] p-0">
@@ -89,5 +83,30 @@ export function MobileNav() {
         </ScrollArea>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function MobileUserMenu() {
+  const { user, logout } = useAuth();
+
+  if (!user) return null;
+
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={logout}
+        className="h-8 w-8"
+        title="Logout"
+      >
+        <LogOut className="h-4 w-4" />
+      </Button>
+      <Avatar className="h-8 w-8">
+        <AvatarFallback>{initials}</AvatarFallback>
+      </Avatar>
+    </div>
   );
 }

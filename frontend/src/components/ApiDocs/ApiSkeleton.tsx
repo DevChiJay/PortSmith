@@ -1,6 +1,6 @@
 import React from "react";
-import { Skeleton } from "@/src/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/src/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function ApiSkeleton() {
   return (

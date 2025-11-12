@@ -1,8 +1,8 @@
 import { Copy, Eye, EyeOff, RotateCw, Trash2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
-import { Badge } from "@/src/components/ui/badge";
-import { toast } from "@/src/components/ui/use-toast";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/components/ui/use-toast";
 import { ApiKey, ApiKeyCardProps } from "./types";
 
 export function ApiKeyCard({ apiKey, revealed, onToggleVisibility, onRotate, onRevoke }: ApiKeyCardProps) {

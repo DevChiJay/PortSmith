@@ -1,12 +1,73 @@
-'use client';
+'use client'
 
-import { SignUp } from "@clerk/nextjs";
-import { dark } from '@clerk/themes';
-import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 export default function SignUpPage() {
-  const { theme } = useTheme();
-  const isDarkTheme = theme === 'dark';
+  const router = useRouter()
+  const { register, isLoading: authLoading, isAuthenticated } = useAuth()
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard')
+    }
+  }, [isAuthenticated, router])
+  
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    // Validation
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      setError('Please fill in all fields')
+      return
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      await register(email, password, firstName, lastName)
+      // Redirect is handled by the register function
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create account. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const isSubmitDisabled = isLoading || authLoading || !firstName || !lastName || !email || !password || !confirmPassword
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -15,25 +76,127 @@ export default function SignUpPage() {
           <h1 className="text-3xl font-bold mb-2 text-gray-800 dark:text-white">Create an Account</h1>
           <p className="text-gray-600 dark:text-gray-300">Sign up to get started with our API platform</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <SignUp routing="hash"
-            appearance={{
-              baseTheme: isDarkTheme ? dark : undefined,
-              elements: {
-                footer: "hidden",
-                logoBox: "hidden",
-                logoImage: "hidden",
-                card: "shadow-none",
-                headerTitle: "text-2xl font-bold text-center text-gray-800 dark:text-white",
-                headerSubtitle: "text-center text-gray-600 dark:text-gray-400",
-              }
-            }}
-          />
-        </div>
-        <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>Already have an account? <a href="/login" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium">Sign in</a></p>
-        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign Up</CardTitle>
+            <CardDescription>Create a new account to access the platform</CardDescription>
+          </CardHeader>
+          
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="John"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    disabled={isLoading}
+                    required
+                    autoComplete="given-name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    disabled={isLoading}
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                  required
+                  autoComplete="email"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  required
+                  autoComplete="new-password"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Must be at least 8 characters long
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isLoading}
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitDisabled}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  'Create Account'
+                )}
+              </Button>
+
+              <div className="text-sm text-center text-gray-600 dark:text-gray-400">
+                Already have an account?{' '}
+                <Link
+                  href="/login"
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
     </div>
-  );
+  )
 }

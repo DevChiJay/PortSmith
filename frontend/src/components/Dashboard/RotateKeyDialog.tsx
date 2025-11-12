@@ -1,8 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
-import { toast } from "@/src/components/ui/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import { RotateKeyDialogProps } from "./types";
 
 export function RotateKeyDialog({ 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Card } from "@/src/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { EmptyKeyState } from "./EmptyKeyState";
 import { ApiKeyCard } from "./ApiKeyCard";
 import { CreateKeyDialog } from "./CreateKeyDialog";

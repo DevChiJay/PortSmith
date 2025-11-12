@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
 import {
   ArrowRight,
   Code,
@@ -42,7 +42,8 @@ const iconMap = {
   Default: FileText,
 };
 function Featured() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const isSignedIn = isAuthenticated;
   const router = useRouter();
   const { data, isLoading, error } = useApiData<Api[]>({
     endpoint: "/api/apis/featured",

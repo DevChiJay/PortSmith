@@ -1,15 +1,15 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/hooks/use-user";
 import { Clock, Key, KeyRound } from "lucide-react";
-import { useApiData } from "@/src/hooks/use-api-data";
+import { useApiData } from "@/hooks/use-api-data";
 import Link from "next/link";
 import Head from "next/head";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import DashboardSkeleton from "@/src/components/Dashboard/DashboardSkeleton";
-import ApiKeys from "@/src/components/Dashboard/ApiKeys";
-import { ApiKey, ApiInfo } from "@/src/components/Dashboard/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import DashboardSkeleton from "@/components/Dashboard/DashboardSkeleton";
+import ApiKeys from "@/components/Dashboard/ApiKeys";
+import { ApiKey, ApiInfo } from "@/components/Dashboard/types";
 
 export default function Dashboard() {
   const { user } = useUser();

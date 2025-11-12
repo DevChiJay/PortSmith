@@ -1,9 +1,21 @@
-import { UserButton } from "@clerk/nextjs";
-import { Key, Library, Settings, Home } from "lucide-react";
+'use client'
 
-import { ModeToggle } from "@/src/components/mode-toggle";
-import { ScrollArea } from "@/src/components/ui/scroll-area";
-import { NavLink } from "@/src/components/Dashboard/NavLink";
+import { Key, Library, Settings, Home, LogOut } from "lucide-react";
+
+import { ModeToggle } from "@/components/mode-toggle";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { NavLink } from "@/components/Dashboard/NavLink";
+import { useAuth } from "@/lib/auth-context";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Sidebar() {
   return (
@@ -52,22 +64,52 @@ export function Sidebar() {
       </ScrollArea>
 
       <div className="border-t p-4">
-        <div className="flex items-center gap-3 px-2">
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-8 h-8"
-              }
-            }}
-          />
-          <div className="flex flex-col text-sm">
-            <span className="font-medium">My Account</span>
-            <span className="text-xs text-muted-foreground">Developer</span>
-          </div>
-          <ModeToggle />
-        </div>
+        <UserMenu />
       </div>
     </aside>
+  );
+}
+
+function UserMenu() {
+  const { user, logout } = useAuth();
+
+  if (!user) return null;
+
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+
+  return (
+    <div className="flex items-center gap-3 px-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={logout} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="flex flex-col text-sm">
+        <span className="font-medium">{user.firstName} {user.lastName}</span>
+        <span className="text-xs text-muted-foreground">{user.role}</span>
+      </div>
+      <ModeToggle />
+    </div>
   );
 }

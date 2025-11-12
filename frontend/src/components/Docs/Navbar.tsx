@@ -2,15 +2,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 import { Book, Menu, ArrowRight, ChevronRight, Home, Library, Search } from "lucide-react";
 
-import { cn } from "@/src/lib/utils";
-import { Button } from "@/src/components/ui/button";
-import { ModeToggle } from "@/src/components/mode-toggle";
-import { Sheet, SheetContent, SheetTrigger } from "@/src/components/ui/sheet";
-import { Input } from "@/src/components/ui/input";
-import { Badge } from "@/src/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   {
@@ -76,15 +86,8 @@ export default function DocsNavbar() {
           
           <ModeToggle />
           
-          {isLoaded && isSignedIn ? (
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  userButtonAvatarBox: "w-8 h-8"
-                }
-              }}
-            />
+          {isSignedIn ? (
+            <UserMenuButton />
           ) : (
             <Button size="sm" className="hidden md:inline-flex" asChild>
               <Link href="/login">Sign In</Link>
@@ -158,5 +161,42 @@ export default function DocsNavbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+function UserMenuButton() {
+  const { user, logout } = useAuth();
+
+  if (!user) return null;
+
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout} className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -1,6 +1,6 @@
 import { Key, Plus } from "lucide-react";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { EmptyKeyStateProps } from "./types";
 
 export function EmptyKeyState({ onCreateKey }: EmptyKeyStateProps) {

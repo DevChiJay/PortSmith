@@ -1,13 +1,13 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import { useApiData } from "@/src/hooks/use-api-data";
-import { useUser } from "@clerk/nextjs";
+import { useApiData } from "@/hooks/use-api-data";
+import { useUser } from "@/hooks/use-user";
 
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { ApiKeysList } from "@/src/components/Dashboard/ApiKeysList";
-import { ApiKeysSkeleton } from "@/src/components/Dashboard/ApiKeysSkeleton";
-import { ApiKey, ApiInfo } from "@/src/components/Dashboard/types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ApiKeysList } from "@/components/Dashboard/ApiKeysList";
+import { ApiKeysSkeleton } from "@/components/Dashboard/ApiKeysSkeleton";
+import { ApiKey, ApiInfo } from "@/components/Dashboard/types";
 
 export default function MyApiKeysPage() {
   const { user } = useUser();

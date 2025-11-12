@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApiData } from "@/src/hooks/use-api-data";
+import { useApiData } from "@/hooks/use-api-data";
 import { ChevronLeft, Code } from "lucide-react";
 import axios from "axios";
 
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ApiSkeleton } from "@/src/components/ApiDocs/ApiSkeleton";
-import { DocView } from "@/src/components/ApiDocs/View";
-import { ApiDocumentation } from "@/src/components/Docs/types";
+import { ApiSkeleton } from "@/components/ApiDocs/ApiSkeleton";
+import { DocView } from "@/components/ApiDocs/View";
+import { ApiDocumentation } from "@/components/Docs/types";
 
 export default function ApiDocsDetailPage() {
   const params = useParams();

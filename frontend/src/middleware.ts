@@ -1,12 +1,28 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/admin(.*)'])
-// Public routes matcher - explicitly mark routes that should be public but matched by our matchers 
-const isPublicRoute = createRouteMatcher(['/docs(.*)'])
+// Define protected routes that require authentication
+const protectedRoutes = ['/dashboard', '/api', '/admin']
 
-export default clerkMiddleware(async(auth, req) => {
-  if (isProtectedRoute(req) && !isPublicRoute(req)) await auth.protect()
-})
+// Define public routes that don't require authentication
+const publicRoutes = ['/', '/login', '/signup', '/docs', '/pricing', '/terms', '/privacy']
+
+// Check if a path matches any of the route patterns
+function isProtectedRoute(pathname: string): boolean {
+  return protectedRoutes.some(route => pathname.startsWith(route))
+}
+
+function isPublicRoute(pathname: string): boolean {
+  return publicRoutes.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+}
+
+export function middleware(request: NextRequest) {
+  // Let all routes through - authentication is handled client-side
+  // This prevents middleware from interfering with client-side navigation
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [

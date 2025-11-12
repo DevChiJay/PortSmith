@@ -1,15 +1,26 @@
-import type { ReactNode } from "react"
-import { UserButton } from "@clerk/nextjs";
-import Link from "next/link"
-import { List, Settings, Users, ShieldCheck, Key, ChevronRight, Filter, Search } from "lucide-react"
+'use client'
 
-import { cn } from "@/src/lib/utils"
-import { ModeToggle } from "@/src/components/mode-toggle"
-import { Button } from "@/src/components/ui/button"
-import { Input } from "@/src/components/ui/input"
-import { ScrollArea } from "@/src/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "@/src/components/ui/sheet"
-import { Separator } from "@/src/components/ui/separator"
+import type { ReactNode } from "react"
+import Link from "next/link"
+import { List, Settings, Users, ShieldCheck, Key, ChevronRight, Filter, Search, LogOut } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { cn } from "@/lib/utils"
+import { ModeToggle } from "@/components/mode-toggle"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -60,20 +71,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <div className="border-t p-4">
           <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-2">
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-8 h-8"
-                  }
-                }}
-              />
-              <div className="flex flex-col text-sm">
-                <span className="font-medium">Admin</span>
-                <span className="text-xs text-muted-foreground">Full Access</span>
-              </div>
-            </div>
+            <AdminUserMenu />
             <ModeToggle />
           </div>
         </div>
@@ -96,16 +94,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <span className="font-semibold">Admin Panel</span>
           </div>
           
-          <div className="flex items-center gap-1">
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  userButtonAvatarBox: "w-8 h-8"
-                }
-              }}
-            />
-          </div>
+          <AdminUserMenu />
         </div>
         
         <SheetContent side="left" className="w-[240px] sm:w-[280px] p-0">
@@ -222,5 +211,48 @@ function AdminNavLink({
         "h-4 w-4 text-muted-foreground transition-transform"
       )} />
     </Link>
+  );
+}
+
+function AdminUserMenu() {
+  const { user, logout } = useAuth();
+
+  if (!user) return null;
+
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-10 w-full justify-start gap-2 px-2">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-start text-sm">
+            <span className="font-medium">
+              {user.firstName} {user.lastName}
+            </span>
+            <span className="text-xs text-muted-foreground">{user.role}</span>
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout} className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
