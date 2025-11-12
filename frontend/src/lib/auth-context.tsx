@@ -7,9 +7,8 @@ import axios, { AxiosInstance } from 'axios'
 // Types
 interface User {
   id: string
+  username: string
   email: string
-  firstName: string
-  lastName: string
   role: 'user' | 'admin'
   createdAt: string
 }
@@ -19,7 +18,7 @@ interface AuthContextType {
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>
+  register: (username: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
   axiosInstance: AxiosInstance
@@ -177,18 +176,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Register function
   const register = useCallback(async (
+    username: string,
     email: string,
-    password: string,
-    firstName: string,
-    lastName: string
+    password: string
   ) => {
     setIsLoading(true)
     try {
       const response = await axiosInstance.post<AuthResponse>('/api/auth/register', {
+        username,
         email,
         password,
-        firstName,
-        lastName,
       })
 
       const { user: userData, accessToken, refreshToken } = response.data

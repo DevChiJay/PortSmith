@@ -22,8 +22,7 @@ export default function SignUpPage() {
     }
   }, [isAuthenticated, router])
   
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -35,8 +34,13 @@ export default function SignUpPage() {
     setError('')
     
     // Validation
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       setError('Please fill in all fields')
+      return
+    }
+
+    if (username.length < 3) {
+      setError('Username must be at least 3 characters long')
       return
     }
 
@@ -45,8 +49,8 @@ export default function SignUpPage() {
       return
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long')
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long')
       return
     }
 
@@ -58,7 +62,7 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      await register(email, password, firstName, lastName)
+      await register(username, email, password)
       // Redirect is handled by the register function
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account. Please try again.')
@@ -67,7 +71,7 @@ export default function SignUpPage() {
     }
   }
 
-  const isSubmitDisabled = isLoading || authLoading || !firstName || !lastName || !email || !password || !confirmPassword
+  const isSubmitDisabled = isLoading || authLoading || !username || !email || !password || !confirmPassword
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -92,34 +96,21 @@ export default function SignUpPage() {
                 </Alert>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="John"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    disabled={isLoading}
-                    required
-                    autoComplete="given-name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Doe"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    disabled={isLoading}
-                    required
-                    autoComplete="family-name"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="johndoe"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                  required
+                  autoComplete="username"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Must be at least 3 characters long
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -149,7 +140,7 @@ export default function SignUpPage() {
                   autoComplete="new-password"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Must be at least 8 characters long
+                  Must be at least 6 characters long
                 </p>
               </div>
 
