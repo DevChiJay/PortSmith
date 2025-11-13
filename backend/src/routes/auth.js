@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authControllers');
 const { requireAuth } = require('../middleware/auth');
+const { handleAvatarUpload } = require('../middleware/upload');
 
 // Public routes
 router.post('/register', authController.register);
@@ -21,5 +22,8 @@ router.get('/unauthorized', (req, res) => {
 // Protected routes (require JWT authentication)
 router.get('/me', requireAuth, authController.getCurrentUser);
 router.post('/logout', requireAuth, authController.logout);
+router.put('/profile', requireAuth, authController.updateProfile);
+router.post('/avatar', requireAuth, handleAvatarUpload, authController.uploadAvatar);
+router.delete('/avatar', requireAuth, authController.deleteAvatar);
 
 module.exports = router;

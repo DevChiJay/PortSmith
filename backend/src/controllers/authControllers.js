@@ -2,6 +2,7 @@ const User = require('../models/User');
 const { generateTokenPair, verifyRefreshToken, generateAccessToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const { sendVerificationEmail } = require('../utils/emailService');
+const { deleteOldAvatar } = require('../middleware/upload');
 const crypto = require('crypto');
 
 /**
@@ -451,6 +452,170 @@ exports.resendVerification = async (req, res) => {
     res.status(500).json({
       error: 'Internal Server Error',
       message: 'Failed to resend verification email'
+    });
+  }
+};
+
+/**
+ * Update user profile
+ * PUT /api/auth/profile
+ */
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { full_name, phone, avatar_url } = req.body;
+
+    // Find user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'User not found'
+      });
+    }
+
+    // Update fields if provided
+    if (full_name !== undefined) {
+      if (full_name.trim().length < 2) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'Full name must be at least 2 characters long'
+        });
+      }
+      user.full_name = full_name.trim();
+    }
+
+    if (phone !== undefined) {
+      user.phone = phone.trim();
+    }
+
+    if (avatar_url !== undefined) {
+      user.avatar_url = avatar_url;
+    }
+
+    await user.save();
+
+    // Prepare user data response
+    const userData = {
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      role: user.role,
+      avatar_url: user.avatar_url,
+      phone: user.phone,
+      is_verified: user.is_verified,
+      createdAt: user.createdAt
+    };
+
+    logger.info(`Profile updated for user: ${user.email} (${user._id})`);
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: userData
+    });
+  } catch (error) {
+    logger.error('Update profile error:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to update profile'
+    });
+  }
+};
+
+/**
+ * Upload avatar
+ * POST /api/auth/avatar
+ */
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'No file uploaded'
+      });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'User not found'
+      });
+    }
+
+    // Delete old avatar if exists
+    if (user.avatar_url) {
+      deleteOldAvatar(user.avatar_url);
+    }
+
+    // Generate avatar URL
+    const avatarUrl = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`;
+    
+    // Update user's avatar_url
+    user.avatar_url = avatarUrl;
+    await user.save();
+
+    logger.info(`Avatar uploaded for user: ${user.email} (${user._id})`);
+
+    res.json({
+      success: true,
+      message: 'Avatar uploaded successfully',
+      avatar_url: avatarUrl
+    });
+  } catch (error) {
+    logger.error('Upload avatar error:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to upload avatar'
+    });
+  }
+};
+
+/**
+ * Delete avatar
+ * DELETE /api/auth/avatar
+ */
+exports.deleteAvatar = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'User not found'
+      });
+    }
+
+    // Delete old avatar file
+    if (user.avatar_url) {
+      deleteOldAvatar(user.avatar_url);
+    }
+
+    // Clear avatar_url
+    user.avatar_url = '';
+    await user.save();
+
+    logger.info(`Avatar deleted for user: ${user.email} (${user._id})`);
+
+    res.json({
+      success: true,
+      message: 'Avatar deleted successfully'
+    });
+  } catch (error) {
+    logger.error('Delete avatar error:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to delete avatar'
     });
   }
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const path = require('path');
 const logger = require('./utils/logger');
 
 // Route imports
@@ -13,8 +14,16 @@ const gatewayRoutes = require('./routes/gateway');
 // Create Express app
 const app = express();
 
-// Security middleware
-app.use(helmet());
+// Security middleware with relaxed CSP for images
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "blob:", process.env.FRONTEND_URL || 'http://localhost:3000'],
+    },
+  },
+}));
 
 // Enable CORS with credentials support
 app.use(cors({
@@ -31,6 +40,15 @@ app.use(logger.httpLogger);
 // Parse JSON bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve static files from uploads directory with proper CORS headers
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(path.join(__dirname, '../uploads')));
 
 // Note: JWT authentication is handled by requireAuth middleware in individual routes
 // No global authentication middleware needed
