@@ -7,9 +7,12 @@ import axios, { AxiosInstance } from 'axios'
 // Types
 interface User {
   id: string
-  username: string
+  full_name: string
   email: string
   role: 'user' | 'admin'
+  avatar_url?: string
+  phone?: string
+  is_verified: boolean
   createdAt: string
 }
 
@@ -18,7 +21,7 @@ interface AuthContextType {
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (username: string, email: string, password: string) => Promise<void>
+  register: (fullName: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
   axiosInstance: AxiosInstance
@@ -176,28 +179,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Register function
   const register = useCallback(async (
-    username: string,
+    fullName: string,
     email: string,
     password: string
   ) => {
     setIsLoading(true)
     try {
-      const response = await axiosInstance.post<AuthResponse>('/api/auth/register', {
-        username,
+      const response = await axiosInstance.post('/api/auth/register', {
+        full_name: fullName,
         email,
         password,
       })
 
-      const { user: userData, accessToken, refreshToken } = response.data
-      
-      // Store tokens in localStorage
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      
-      setUser(userData)
-      
-      // Force a hard redirect to dashboard to ensure middleware runs
-      window.location.href = '/dashboard'
+      // Registration successful - user needs to verify email
+      // Don't store tokens or set user - verification required first
+      return response.data
     } catch (error: any) {
       console.error('Registration error:', error)
       const errorMessage = error.response?.data?.message || error.message || 'Registration failed'

@@ -2,13 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'Username is required'],
-    unique: true,
-    trim: true,
-    minlength: [3, 'Username must be at least 3 characters']
-  },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -20,6 +13,31 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters'],
     select: false // Don't return password in queries by default
+  },
+  full_name: {
+    type: String,
+    required: [true, 'Full name is required'],
+    trim: true
+  },
+  avatar_url: {
+    type: String,
+    default: ''
+  },
+  phone: {
+    type: String,
+    default: ''
+  },
+  is_verified: {
+    type: Boolean,
+    default: false
+  },
+  verification_token: {
+    type: String,
+    select: false // Don't return token in queries by default
+  },
+  verification_token_expires: {
+    type: Date,
+    select: false // Don't return expiry in queries by default
   },
   role: {
     type: String,
