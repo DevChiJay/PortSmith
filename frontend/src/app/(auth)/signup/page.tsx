@@ -108,7 +108,7 @@ export default function SignUpPage() {
           <Link href="/" className="inline-block mb-4">
             <Image
               src="/logo.png"
-              alt="APISmith Logo"
+              alt="PortSmith Logo"
               width={120}
               height={120}
               className="mx-auto"

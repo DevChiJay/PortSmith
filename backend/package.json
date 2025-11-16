@@ -1,7 +1,7 @@
 {
-  "name": "api-key-management",
+  "name": "portsmith-backend",
   "version": "1.0.0",
-  "description": "API Key Management Platform with JWT authentication",
+  "description": "PortSmith - API Gateway Platform with JWT authentication",
   "main": "src/server.js",
   "directories": {
     "test": "tests"

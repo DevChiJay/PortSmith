@@ -31,8 +31,8 @@ const generateAccessToken = (userId, email, role) => {
 
     const token = jwt.sign(payload, secret, {
       expiresIn,
-      issuer: 'APISmith',
-      audience: 'APISmith-Users'
+      issuer: 'PortSmith',
+      audience: 'PortSmith-Users'
     });
 
     logger.debug(`Access token generated for user ${userId}`);
@@ -64,8 +64,8 @@ const generateRefreshToken = (userId) => {
 
     const token = jwt.sign(payload, secret, {
       expiresIn,
-      issuer: 'APISmith',
-      audience: 'APISmith-Users'
+      issuer: 'PortSmith',
+      audience: 'PortSmith-Users'
     });
 
     logger.debug(`Refresh token generated for user ${userId}`);

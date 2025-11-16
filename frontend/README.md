@@ -1,8 +1,8 @@
-# 🚀 APISmith Frontend - Developer Portal
+# 🚀 PortSmith Frontend - Developer Portal
 
 A modern API developer portal for managing API keys, accessing documentation, and monitoring API usage. Built with Next.js 15, React 19, and TypeScript.
 
-![APISmith](https://placehold.co/800x400?text=APISmith+Developer+Portal)
+![PortSmith](https://placehold.co/800x400?text=PortSmith+Developer+Portal)
 
 ---
 
@@ -67,7 +67,7 @@ cp .env.example .env.local
 
 # Update .env.local with:
 NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_APP_NAME=APISmith
+NEXT_PUBLIC_APP_NAME=PortSmith
 ```
 
 ### Development
@@ -377,7 +377,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Project**: APISmith API Gateway Platform  
+**Project**: PortSmith API Gateway Platform  
 **Version**: 2.0.0  
 **Last Updated**: January 2025  
 **Status**: ⏳ In Development (Backend Complete, Frontend Phase 1 Pending)

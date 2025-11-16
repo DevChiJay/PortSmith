@@ -7,21 +7,21 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "APISmith - API Developer Portal",
-  description: "Manage and explore APIs for developers with APISmith",
+  title: "PortSmith - API Developer Portal",
+  description: "Manage and explore APIs for developers with PortSmith",
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "APISmith - API Developer Portal",
-    description: "Manage and explore APIs for developers with APISmith",
+    title: "PortSmith - API Developer Portal",
+    description: "Manage and explore APIs for developers with PortSmith",
     images: ["/logo.png"],
-    url: "https://apismith.dev",
+    url: "https://portsmith.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "APISmith - API Developer Portal",
-    description: "Manage and explore APIs for developers with APISmith",
+    title: "PortSmith - API Developer Portal",
+    description: "Manage and explore APIs for developers with PortSmith",
     images: ["/logo.png"],
   },
 };

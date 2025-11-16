@@ -1,6 +1,6 @@
-# API Key Management Platform
+# PortSmith - API Gateway Platform
 
-A scalable API Key Management platform built with Node.js, Express, and MongoDB, featuring JWT for authentication.
+A scalable API Gateway platform built with Node.js, Express, and MongoDB, featuring JWT for authentication.
 
 ## Features
 
@@ -31,8 +31,8 @@ The application follows a modular architecture with:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/api-key-management.git
-   cd api-key-management
+   git clone https://github.com/yourusername/portsmith.git
+   cd portsmith
    ```
 
 2. Install dependencies:
