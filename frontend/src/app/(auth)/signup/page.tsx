@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
 import { VerificationModal } from '@/components/verification-modal'
+import { GoogleSignInButton } from '@/components/google-signin-button'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -212,6 +213,19 @@ export default function SignUpPage() {
                   'Create Account'
                 )}
               </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <GoogleSignInButton />
 
               <div className="text-sm text-center text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}

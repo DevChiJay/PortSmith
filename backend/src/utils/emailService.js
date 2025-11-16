@@ -13,7 +13,7 @@ const EMAIL_CONFIG = {
 };
 
 const FROM_EMAIL = process.env.EMAIL_FROM || process.env.EMAIL_USER;
-const APP_NAME = process.env.APP_NAME || 'APISmith';
+const APP_NAME = process.env.APP_NAME || 'PortSmith';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 // Create transporter

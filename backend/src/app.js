@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const path = require('path');
 const logger = require('./utils/logger');
+const passport = require('./config/passport');
 
 // Route imports
 const authRoutes = require('./routes/auth');
@@ -40,6 +41,9 @@ app.use(logger.httpLogger);
 // Parse JSON bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Initialize Passport for OAuth authentication
+app.use(passport.initialize());
 
 // Serve static files from uploads directory with proper CORS headers
 app.use('/uploads', (req, res, next) => {

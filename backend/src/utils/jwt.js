@@ -90,8 +90,8 @@ const verifyAccessToken = (token) => {
     }
 
     const decoded = jwt.verify(token, secret, {
-      issuer: 'APISmith',
-      audience: 'APISmith-Users'
+      issuer: 'PortSmith',
+      audience: 'PortSmith-Users'
     });
 
     // Verify token type
@@ -127,8 +127,8 @@ const verifyRefreshToken = (token) => {
     }
 
     const decoded = jwt.verify(token, secret, {
-      issuer: 'APISmith',
-      audience: 'APISmith-Users'
+      issuer: 'PortSmith',
+      audience: 'PortSmith-Users'
     });
 
     // Verify token type

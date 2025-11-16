@@ -1,7 +1,9 @@
+// Load environment variables FIRST before anything else
+require('dotenv').config();
+
 const app = require('./app');
 const connectDB = require('./config/db');
 const logger = require('./utils/logger');
-require('dotenv').config();
 
 // Connect to MongoDB
 connectDB();
