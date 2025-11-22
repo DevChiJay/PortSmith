@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
 import { VerificationModal } from '@/components/verification-modal'
 import { GoogleSignInButton } from '@/components/google-signin-button'
+import { GitHubSignInButton } from '@/components/github-signin-button'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -226,6 +227,7 @@ export default function SignUpPage() {
               </div>
 
               <GoogleSignInButton />
+              <GitHubSignInButton />
 
               <div className="text-sm text-center text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}

@@ -1,5 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GitHubStrategy = require('passport-github2').Strategy;
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
@@ -58,6 +59,80 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
         done(error, null);
       }
     }
+    )
+  );
+}
+
+// ============================================================================
+// GitHub OAuth Strategy Configuration
+// ============================================================================
+
+// Verify that GitHub OAuth credentials are configured
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+  logger.warn('GitHub OAuth credentials not configured. GitHub Sign-In will not be available.');
+  logger.warn('Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in your .env file.');
+} else {
+  // Configure GitHub OAuth Strategy
+  passport.use(
+    new GitHubStrategy(
+      {
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:5000/api/auth/github/callback',
+        scope: ['user:email'], // Request email access
+        passReqToCallback: true
+      },
+      async (req, accessToken, refreshToken, profile, done) => {
+        try {
+          logger.info(`GitHub OAuth callback for user: ${profile.username}`);
+
+          // Extract user information from GitHub profile
+          // GitHub profile.emails may be empty if user's email is private
+          const email = profile.emails && profile.emails.length > 0 
+            ? profile.emails[0].value 
+            : null;
+          
+          if (!email) {
+            logger.warn(`GitHub user ${profile.username} has no public email`);
+            return done(new Error('GitHub account must have a public email address'), null);
+          }
+
+          const githubId = profile.id;
+          const username = profile.username;
+          
+          // Check if user already exists by email
+          let user = await User.findOne({ email });
+
+          if (user) {
+            // User exists - update GitHub ID if not set
+            if (!user.githubId) {
+              user.githubId = githubId;
+              user.is_verified = true; // GitHub accounts are pre-verified
+              await user.save();
+              logger.info(`Updated existing user with GitHub ID: ${email}`);
+            } else {
+              logger.info(`Existing GitHub user logged in: ${email}`);
+            }
+            return done(null, user);
+          }
+
+          // Create new user with GitHub account
+          user = await User.create({
+            githubId: githubId,
+            email: email,
+            full_name: profile.displayName || username,
+            avatar_url: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : '',
+            is_verified: true, // GitHub accounts are pre-verified
+            role: 'user'
+          });
+
+          logger.info(`Created new user via GitHub OAuth: ${email}`);
+          done(null, user);
+        } catch (error) {
+          logger.error('GitHub OAuth error:', error);
+          done(error, null);
+        }
+      }
     )
   );
 }

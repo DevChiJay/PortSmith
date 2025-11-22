@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle, Mail, ArrowLeft } from 'lucide-react'
 import { GoogleSignInButton } from '@/components/google-signin-button'
+import { GitHubSignInButton } from '@/components/github-signin-button'
 import axios from 'axios'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
@@ -223,6 +224,7 @@ export default function LoginPage() {
               </div>
 
               <GoogleSignInButton />
+              <GitHubSignInButton />
 
               <div className="text-sm text-center text-gray-600 dark:text-gray-400">
                 Don't have an account?{' '}

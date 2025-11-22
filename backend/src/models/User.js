@@ -12,12 +12,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: function() {
       // Password is required only if not using OAuth
-      return !this.googleId;
+      return !this.googleId && !this.githubId;
     },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false // Don't return password in queries by default
   },
   googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allows multiple null values
+  },
+  githubId: {
     type: String,
     unique: true,
     sparse: true // Allows multiple null values

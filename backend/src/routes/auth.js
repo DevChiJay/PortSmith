@@ -51,6 +51,44 @@ router.get('/google/callback',
   }
 );
 
+// GitHub OAuth routes
+router.get('/github', 
+  passport.authenticate('github', { 
+    scope: ['user:email'],
+    session: false 
+  })
+);
+
+router.get('/github/callback',
+  passport.authenticate('github', { 
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=github_auth_failed`
+  }),
+  (req, res) => {
+    try {
+      // Generate JWT tokens for the authenticated user
+      const { accessToken, refreshToken } = generateTokenPair(
+        req.user._id.toString(),
+        req.user.email,
+        req.user.role
+      );
+      
+      // Encode tokens for URL
+      const encodedAccessToken = encodeURIComponent(accessToken);
+      const encodedRefreshToken = encodeURIComponent(refreshToken);
+      
+      // Redirect to frontend with both tokens
+      res.redirect(
+        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?` +
+        `accessToken=${encodedAccessToken}&refreshToken=${encodedRefreshToken}`
+      );
+    } catch (error) {
+      console.error('Error generating tokens:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=authentication_failed`);
+    }
+  }
+);
+
 // Handler for unauthorized requests
 router.get('/unauthorized', (req, res) => {
   res.status(401).json({
