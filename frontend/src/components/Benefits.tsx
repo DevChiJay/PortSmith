@@ -1,80 +1,209 @@
-import { CheckCircle, Code, ShieldCheck, Zap } from "lucide-react";
+'use client';
+
+import { CheckCircle, Code, ShieldCheck, Zap, Lock, BarChart3, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
+
+const benefits = [
+  {
+    icon: Zap,
+    title: "Lightning Fast",
+    description: "Optimized gateway with response times under 50ms. Built for speed and scale.",
+    features: [
+      "Low latency responses",
+      "Global CDN distribution",
+      "Smart caching layer"
+    ],
+    color: "from-gray-600 to-gray-500"
+  },
+  {
+    icon: Code,
+    title: "Developer First",
+    description: "Comprehensive docs, SDKs, and tools designed for modern developers.",
+    features: [
+      "Interactive API explorer",
+      "Multiple SDK options",
+      "Code generation"
+    ],
+    color: "from-gray-700 to-gray-600"
+  },
+  {
+    icon: ShieldCheck,
+    title: "Enterprise Security",
+    description: "Bank-grade encryption and security. Your data is safe with us.",
+    features: [
+      "End-to-end encryption",
+      "SOC 2 compliant",
+      "Key rotation & revocation"
+    ],
+    color: "from-green-300 to-green-200 dark:from-green-800 dark:to-green-700"
+  },
+  {
+    icon: Lock,
+    title: "Unified Authentication",
+    description: "One API key for all services. Simplify your integration workflow.",
+    features: [
+      "Single sign-on",
+      "Role-based access",
+      "Audit logging"
+    ],
+    color: "from-gray-500 to-gray-400"
+  },
+  {
+    icon: BarChart3,
+    title: "Real-time Analytics",
+    description: "Track every request with detailed metrics and insights.",
+    features: [
+      "Usage dashboards",
+      "Custom reports",
+      "Alerting & monitoring"
+    ],
+    color: "from-gray-600 to-gray-500"
+  },
+  {
+    icon: Globe,
+    title: "Global Scale",
+    description: "Deploy worldwide with 99.99% uptime SLA and automatic failover.",
+    features: [
+      "Multi-region deployment",
+      "Auto-scaling",
+      "DDoS protection"
+    ],
+    color: "from-green-200 to-green-100 dark:from-green-900 dark:to-green-800"
+  }
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
 
 function Benefits() {
   return (
-    <section className="py-16 px-4 hero-gradient rounded-3xl my-6 mx-4 md:mx-10">
-      <div className="text-center mb-12">
-        <Badge className="mb-4">Why Choose Us</Badge>
-        <h2 className="text-3xl font-bold">Why Choose Our API Platform</h2>
-        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-          Built for developers, by developers
+    <section className="py-24 px-4 relative overflow-hidden">
+      {/* Section Header */}
+      <div className="text-center mb-16 max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <Badge className="mb-4 px-4 py-1.5 glass-card bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700">
+            <Zap className="h-3 w-3 mr-1 inline" />
+            Why PortSmith
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-black mb-4 gradient-text">
+            Everything You Need to Build Fast
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Built for developers, by developers. Scale from prototype to production seamlessly.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Benefits Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
+      >
+        {benefits.map((benefit, index) => (
+          <motion.div
+            key={benefit.title}
+            variants={itemVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            className="group relative"
+          >
+            {/* Card */}
+            <div className="glass-card rounded-2xl p-8 h-full relative overflow-hidden transition-all duration-300 hover:shadow-2xl">
+              {/* Gradient Accent on Hover */}
+              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${benefit.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+              
+              {/* Icon */}
+              <div className="relative mb-6">
+                <div className={`absolute inset-0 bg-gradient-to-br ${benefit.color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
+                <div className="relative glass-card p-4 rounded-2xl w-fit">
+                  <benefit.icon className={`h-8 w-8 bg-gradient-to-br ${benefit.color} bg-clip-text text-transparent`} strokeWidth={2} />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="relative">
+                <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                  {benefit.title}
+                </h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  {benefit.description}
+                </p>
+
+                {/* Features List */}
+                <ul className="space-y-3">
+                  {benefit.features.map((feature, idx) => (
+                    <motion.li
+                      key={feature}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 * idx }}
+                      className="flex items-start text-sm"
+                    >
+                      <CheckCircle className="h-5 w-5 text-gray-700 dark:text-gray-300 mr-3 mt-0.5 flex-shrink-0" strokeWidth={2.5} />
+                      <span className="text-foreground/80">{feature}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Decorative Element */}
+              <div className={`absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl ${benefit.color} rounded-tl-full opacity-5 group-hover:opacity-10 transition-opacity duration-300 -mr-16 -mb-16`} />
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Bottom CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="text-center mt-16"
+      >
+        <p className="text-muted-foreground mb-4">
+          Join thousands of developers building with PortSmith
         </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div className="glass-effect p-6 rounded-xl shadow-sm">
-          <div className="bg-primary/10 p-3 rounded-full w-fit mb-4">
-            <Zap className="h-6 w-6 text-primary" />
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <div className="flex -space-x-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-10 w-10 rounded-full glass-card border-2 border-background flex items-center justify-center text-xs font-bold">
+                {String.fromCharCode(64 + i)}
+              </div>
+            ))}
           </div>
-          <h3 className="text-xl font-semibold mb-2">High Performance</h3>
-          <p className="text-muted-foreground">
-            Our APIs are optimized for speed and reliability, with 99.9% uptime
-            guarantee.
-          </p>
-          <ul className="mt-4 space-y-2">
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Low latency
-              responses
-            </li>
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Global CDN
-              distribution
-            </li>
-          </ul>
+          <span className="text-muted-foreground font-medium">
+            <span className="text-foreground font-bold">2,500+</span> developers trust PortSmith
+          </span>
         </div>
-
-        <div className="glass-effect p-6 rounded-xl shadow-sm">
-          <div className="bg-primary/10 p-3 rounded-full w-fit mb-4">
-            <Code className="h-6 w-6 text-primary" />
-          </div>
-          <h3 className="text-xl font-semibold mb-2">Developer Friendly</h3>
-          <p className="text-muted-foreground">
-            Comprehensive documentation, code samples, and SDKs for multiple
-            languages.
-          </p>
-          <ul className="mt-4 space-y-2">
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Interactive
-              API explorer
-            </li>
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Multiple SDK
-              options
-            </li>
-          </ul>
-        </div>
-
-        <div className="glass-effect p-6 rounded-xl shadow-sm">
-          <div className="bg-primary/10 p-3 rounded-full w-fit mb-4">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-          </div>
-          <h3 className="text-xl font-semibold mb-2">Enterprise Security</h3>
-          <p className="text-muted-foreground">
-            Robust security with OAuth2, API keys, and comprehensive audit logs.
-          </p>
-          <ul className="mt-4 space-y-2">
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Encrypted
-              data transfer
-            </li>
-            <li className="flex items-center text-sm">
-              <CheckCircle className="h-4 w-4 text-primary mr-2" /> Key rotation
-              & revocation
-            </li>
-          </ul>
-        </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
