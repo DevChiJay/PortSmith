@@ -65,28 +65,28 @@ function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center pt-4"
+              className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4"
             >
               <Button 
-                size="lg" 
-                className="btn-gradient text-white text-lg px-8 py-6 rounded-xl shadow-2xl group relative overflow-hidden h-auto w-full sm:w-auto"
+                size="default" 
+                className="btn-gradient text-white px-6 py-5 rounded-lg shadow-xl group relative overflow-hidden h-auto w-full sm:w-auto"
                 asChild
               >
                 <Link href="/signup" className="flex items-center gap-2">
                   Get Started Free
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
               
               <Button 
-                size="lg" 
+                size="default" 
                 variant="outline" 
-                className="text-lg px-8 py-6 rounded-xl glass-card hover:glass-card border-2 hover:border-primary/50 transition-all duration-300 h-auto w-full sm:w-auto group"
+                className="px-6 py-5 rounded-lg glass-card hover:glass-card border-2 hover:border-primary/50 transition-all duration-300 h-auto w-full sm:w-auto group"
                 asChild
               >
                 <Link href="/docs" className="flex items-center gap-2">
                   View Docs
-                  <Zap className="h-5 w-5 group-hover:text-primary transition-colors" />
+                  <Zap className="h-4 w-4 group-hover:text-primary transition-colors" />
                 </Link>
               </Button>
             </motion.div>
@@ -138,29 +138,41 @@ function Hero() {
                 </div>
                 
                 {/* Code Content */}
-                <div className="p-6 font-mono text-sm overflow-x-auto">
+                <div className="p-5 font-mono text-xs overflow-x-auto">
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.8 }}
-                    className="space-y-2"
+                    className="space-y-1.5"
                   >
-                    <div className="text-gray-500">// One key for everything</div>
+                    <div className="text-gray-500">// Simple API request</div>
                     <div className="text-gray-400">
                       <span className="text-purple-400">const</span>{" "}
-                      <span className="text-blue-300">api</span>{" "}
+                      <span className="text-blue-300">response</span>{" "}
                       <span className="text-gray-300">=</span>{" "}
-                      <span className="text-purple-400">new</span>{" "}
-                      <span className="text-yellow-300">PortSmith</span>
+                      <span className="text-purple-400">await</span>{" "}
+                      <span className="text-yellow-300">fetch</span>
                       <span className="text-gray-300">(</span>
+                    </div>
+                    <div className="text-green-400 ml-4">
+                      'https://api.portsmith.com/v1/users'
+                      <span className="text-gray-300">,</span>
                     </div>
                     <div className="text-gray-400 ml-4">
                       <span className="text-gray-300">{'{'}</span>
                     </div>
                     <div className="text-gray-400 ml-8">
-                      <span className="text-blue-300">apiKey</span>
+                      <span className="text-blue-300">headers</span>
+                      <span className="text-gray-300">: {'{'}</span>
+                    </div>
+                    <div className="text-gray-400 ml-12">
+                      <span className="text-green-400">'X-API-Key'</span>
                       <span className="text-gray-300">:</span>{" "}
-                      <span className="text-green-400">'ps_live_...'</span>
+                      <span className="text-orange-400">apiKey</span>
+                      <span className="text-gray-300">,</span>
+                    </div>
+                    <div className="text-gray-400 ml-8">
+                      <span className="text-gray-300">{'}'}</span>
                     </div>
                     <div className="text-gray-400 ml-4">
                       <span className="text-gray-300">{'}'}</span>
@@ -168,42 +180,15 @@ function Hero() {
                     <div className="text-gray-400">
                       <span className="text-gray-300">)</span>
                     </div>
-                    <div className="mt-4"></div>
-                    <div className="text-gray-500">// Access any API</div>
+                    <div className="mt-2"></div>
                     <div className="text-gray-400">
                       <span className="text-purple-400">const</span>{" "}
                       <span className="text-blue-300">data</span>{" "}
                       <span className="text-gray-300">=</span>{" "}
                       <span className="text-purple-400">await</span>{" "}
-                      <span className="text-blue-300">api</span>
+                      <span className="text-blue-300">response</span>
                       <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">weather</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">get</span>
-                      <span className="text-gray-300">()</span>
-                    </div>
-                    <div className="text-gray-400">
-                      <span className="text-purple-400">const</span>{" "}
-                      <span className="text-blue-300">user</span>{" "}
-                      <span className="text-gray-300">=</span>{" "}
-                      <span className="text-purple-400">await</span>{" "}
-                      <span className="text-blue-300">api</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">auth</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">verify</span>
-                      <span className="text-gray-300">()</span>
-                    </div>
-                    <div className="text-gray-400">
-                      <span className="text-purple-400">const</span>{" "}
-                      <span className="text-blue-300">result</span>{" "}
-                      <span className="text-gray-300">=</span>{" "}
-                      <span className="text-purple-400">await</span>{" "}
-                      <span className="text-blue-300">api</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">payments</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-yellow-300">create</span>
+                      <span className="text-yellow-300">json</span>
                       <span className="text-gray-300">()</span>
                       <span className="text-green-500 ml-2">✓</span>
                     </div>
@@ -217,21 +202,12 @@ function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1 }}
-              className="absolute -bottom-6 -left-6 glass-card rounded-xl p-4 shadow-xl hidden lg:block"
+              className="absolute -right-6 glass-card rounded-xl p-4 shadow-xl hidden lg:block"
             >
               <div className="text-3xl font-bold gradient-text">50+</div>
               <div className="text-sm text-muted-foreground">APIs Available</div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-              className="absolute -top-6 -right-6 glass-card rounded-xl p-4 shadow-xl hidden lg:block"
-            >
-              <div className="text-3xl font-bold gradient-text">&lt;50ms</div>
-              <div className="text-sm text-muted-foreground">Response Time</div>
-            </motion.div>
           </motion.div>
         </div>
       </div>

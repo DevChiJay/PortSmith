@@ -8,7 +8,6 @@ import CTA from "../components/CTA";
 import Benefits from "../components/Benefits";
 import Metrics from "../components/Metrics";
 import FAQ from "../components/FAQ";
-import Pricing from "../components/Pricing";
 import Footer from "../components/Footer";
 
 export default function Home() {
@@ -114,16 +113,6 @@ export default function Home() {
           transition={{ duration: 0.6 }}
         >
           <Metrics />
-        </motion.section>
-
-        {/* Pricing Section with Fade In */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <Pricing />
         </motion.section>
 
         {/* FAQ Section */}

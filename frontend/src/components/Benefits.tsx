@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, Code, ShieldCheck, Zap, Lock, BarChart3, Globe } from "lucide-react";
+import { CheckCircle, Code2, ShieldCheck, Zap, KeyRound, Activity, Globe2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
 
@@ -14,10 +14,10 @@ const benefits = [
       "Global CDN distribution",
       "Smart caching layer"
     ],
-    color: "from-gray-600 to-gray-500"
+    color: "from-yellow-500 to-orange-500"
   },
   {
-    icon: Code,
+    icon: Code2,
     title: "Developer First",
     description: "Comprehensive docs, SDKs, and tools designed for modern developers.",
     features: [
@@ -25,7 +25,7 @@ const benefits = [
       "Multiple SDK options",
       "Code generation"
     ],
-    color: "from-gray-700 to-gray-600"
+    color: "from-blue-500 to-cyan-500"
   },
   {
     icon: ShieldCheck,
@@ -36,10 +36,10 @@ const benefits = [
       "SOC 2 compliant",
       "Key rotation & revocation"
     ],
-    color: "from-green-300 to-green-200 dark:from-green-800 dark:to-green-700"
+    color: "from-green-500 to-emerald-500"
   },
   {
-    icon: Lock,
+    icon: KeyRound,
     title: "Unified Authentication",
     description: "One API key for all services. Simplify your integration workflow.",
     features: [
@@ -47,10 +47,10 @@ const benefits = [
       "Role-based access",
       "Audit logging"
     ],
-    color: "from-gray-500 to-gray-400"
+    color: "from-purple-500 to-pink-500"
   },
   {
-    icon: BarChart3,
+    icon: Activity,
     title: "Real-time Analytics",
     description: "Track every request with detailed metrics and insights.",
     features: [
@@ -58,10 +58,10 @@ const benefits = [
       "Custom reports",
       "Alerting & monitoring"
     ],
-    color: "from-gray-600 to-gray-500"
+    color: "from-indigo-500 to-purple-500"
   },
   {
-    icon: Globe,
+    icon: Globe2,
     title: "Global Scale",
     description: "Deploy worldwide with 99.99% uptime SLA and automatic failover.",
     features: [
@@ -69,7 +69,7 @@ const benefits = [
       "Auto-scaling",
       "DDoS protection"
     ],
-    color: "from-green-200 to-green-100 dark:from-green-900 dark:to-green-800"
+    color: "from-teal-500 to-green-500"
   }
 ];
 
@@ -142,7 +142,7 @@ function Benefits() {
               <div className="relative mb-6">
                 <div className={`absolute inset-0 bg-gradient-to-br ${benefit.color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
                 <div className="relative glass-card p-4 rounded-2xl w-fit">
-                  <benefit.icon className={`h-8 w-8 bg-gradient-to-br ${benefit.color} bg-clip-text text-transparent`} strokeWidth={2} />
+                  <benefit.icon className="h-8 w-8 text-foreground" strokeWidth={2} />
                 </div>
               </div>
 

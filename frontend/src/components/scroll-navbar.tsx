@@ -8,49 +8,33 @@ import { Menu, X } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
 
 export default function ScrollNavbar() {
-  const [isVisible, setIsVisible] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Show navbar when scrolling down past 100px
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setIsVisible(true);
-      }
-      // Hide when scrolling up or at top
-      else if (currentScrollY < lastScrollY || currentScrollY < 50) {
-        setIsVisible(false);
-      }
-      
-      setLastScrollY(currentScrollY);
+      // Change navbar background after scrolling 50px
+      setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const navLinks = [
     { href: '/docs', label: 'Documentation' },
-    { href: '/api', label: 'APIs' },
     { href: '/pricing', label: 'Pricing' },
-    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/contact', label: 'Contact' },
   ];
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.nav
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="fixed top-0 left-0 right-0 z-50 px-4 py-4"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="glass-card rounded-2xl px-6 py-3 shadow-2xl border border-gray-200 dark:border-gray-800">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 transition-all duration-300">
+      <div className="max-w-7xl mx-auto">
+        <div className={`rounded-2xl px-6 py-3 transition-all duration-300 ${
+          scrolled 
+            ? 'glass-card shadow-2xl border border-gray-200 dark:border-gray-800' 
+            : 'bg-transparent border border-transparent'
+        }`}>
               <div className="flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
@@ -145,8 +129,6 @@ export default function ScrollNavbar() {
               </AnimatePresence>
             </div>
           </div>
-        </motion.nav>
-      )}
-    </AnimatePresence>
+        </nav>
   );
 }
