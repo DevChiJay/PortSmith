@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApiData } from "@/hooks/use-api-data";
-import { ChevronLeft, Code } from "lucide-react";
-import axios from "axios";
+import { ChevronLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,26 +20,9 @@ export default function ApiDocsDetailPage() {
     dependencies: [slug],
   });
 
-  const [markdown, setMarkdown] = useState<string>("");
-  const [markdownLoading, setMarkdownLoading] = useState<boolean>(false);
   const [specData, setSpecData] = useState<any>(null);
 
   useEffect(() => {
-    if (apiDoc?.documentation) {
-      setMarkdownLoading(true);
-
-      axios
-        .get(`/api/proxy/documentation?url=${encodeURIComponent(apiDoc.documentation)}`)
-        .then((response) => {
-          setMarkdown(response.data);
-          setMarkdownLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error loading markdown:", err);
-          setMarkdownLoading(false);
-        });
-    }
-
     if (apiDoc?.baseUrl && !apiDoc.specData) {
       setSpecData({
         openapi: "3.0.0",
@@ -92,15 +74,9 @@ export default function ApiDocsDetailPage() {
             </Link>
           </Button>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={() => window.open(apiDoc.documentation, "_blank")}>
-            <Code className="mr-2 h-4 w-4" />
-            Raw Documentation
-          </Button>
-        </div>
       </div>
 
-      <DocView apiDoc={apiDoc} markdown={markdown} markdownLoading={markdownLoading} specData={specData} />
+      <DocView apiDoc={apiDoc} specData={specData} />
     </div>
   );
 }
