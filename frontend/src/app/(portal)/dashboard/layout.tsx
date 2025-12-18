@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import { MobileNav } from "@/components/Dashboard/MobileNav";
 import { Sidebar } from "@/components/Dashboard/Sidebar";
-import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
 import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -43,8 +42,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader />
-
         <div className="flex-1 overflow-auto scrollbar-thin p-6">
           {children}
         </div>

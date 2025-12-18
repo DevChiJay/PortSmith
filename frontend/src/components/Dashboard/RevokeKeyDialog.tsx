@@ -1,80 +1,87 @@
-import { useState } from "react";
-import axios from "axios";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
-import { RevokeKeyDialogProps } from "./types";
+'use client';
 
-export function RevokeKeyDialog({ 
-  isOpen, 
-  onOpenChange, 
-  keyId, 
-  refetch, 
-  user,
-  onComplete 
-}: RevokeKeyDialogProps) {
+import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Loader2 } from 'lucide-react';
+
+interface RevokeKeyDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  apiKey: {
+    id: string;
+    name: string;
+  };
+  onSuccess?: () => void;
+}
+
+export function RevokeKeyDialog({ open, onOpenChange, apiKey, onSuccess }: RevokeKeyDialogProps) {
+  const { axiosInstance } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRevokeKey = async () => {
-    if (!keyId) return;
+    if (!apiKey?.id) return;
     setIsSubmitting(true);
-    
-    try {
-      // Get token from Clerk
-      const token = await user?.getToken();
-      
-      // Call the API to revoke the key
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/api/keys/${keyId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
-        }
-      );
 
-      toast({
-        title: "API Key Revoked",
-        description: "Your API key has been successfully revoked",
-      });
-      
-      // Refresh the data
-      refetch();
-      onOpenChange(false);
-    } catch (err) {
-      const error = err as any;
-      toast({
-        title: "Error Revoking Key",
-        description: error.response?.data?.message || error.message || "Failed to revoke API key",
-        variant: "destructive",
-      });
+    try {
+      const response = await axiosInstance.post(`/api/keys/${apiKey.id}/revoke`);
+
+      if (response.data.success) {
+        toast.success('API key revoked successfully');
+        onOpenChange(false);
+        onSuccess?.();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to revoke API key');
     } finally {
       setIsSubmitting(false);
-      onComplete();
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Revoke API Key</DialogTitle>
           <DialogDescription>
-            Are you sure you want to revoke this API key? This action cannot be undone and the key will no longer work.
+            Are you sure you want to revoke "{apiKey?.name}"? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
+
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Once revoked, this API key will immediately stop working and cannot be restored.
+          </AlertDescription>
+        </Alert>
+
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button 
-            variant="destructive" 
-            onClick={handleRevokeKey} 
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Processing..." : "Revoke Key"}
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleRevokeKey} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Revoking...
+              </>
+            ) : (
+              'Revoke Key'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

@@ -98,29 +98,29 @@ export function DashboardContent({ children, className }: DashboardContentProps)
 
 interface DashboardHeaderProps {
   title: string;
-  subtitle?: string;
-  actions?: ReactNode;
+  description?: string;
+  action?: ReactNode;
   className?: string;
 }
 
 /**
- * Dashboard page header with title, subtitle, and action buttons
+ * Dashboard page header with title, description, and action buttons
  */
 export function DashboardHeader({
   title,
-  subtitle,
-  actions,
+  description,
+  action,
   className,
 }: DashboardHeaderProps) {
   return (
-    <div className={cn('flex items-center justify-between space-y-2', className)}>
-      <div>
+    <div className={cn('flex items-center justify-between', className)}>
+      <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-        {subtitle && (
-          <p className="text-muted-foreground">{subtitle}</p>
+        {description && (
+          <p className="text-muted-foreground">{description}</p>
         )}
       </div>
-      {actions && <div className="flex items-center space-x-2">{actions}</div>}
+      {action && <div className="flex items-center space-x-2">{action}</div>}
     </div>
   );
 }

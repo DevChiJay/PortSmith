@@ -1,6 +1,6 @@
 'use client';
 
-import { useActivityLog, ActivityItem } from '@/hooks/use-activity-log';
+import { useActivityLog, type ActivityItem } from '@/hooks/use-activity-log';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import {
   CheckCircle,
   XCircle,
   RefreshCw,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -113,11 +114,13 @@ export function ActivityFeed({ limit = 20, showRefresh = true, className }: Acti
  * Individual activity item component
  */
 function ActivityItem({ activity }: { activity: ActivityItem }) {
-  const Icon = {
+  const iconMap: Record<string, LucideIcon> = {
     api_request: Activity,
     key_created: Key,
     user_registered: UserPlus,
-  }[activity.type];
+  };
+  
+  const Icon = iconMap[activity.type] || Activity;
 
   return (
     <div className="flex items-start space-x-3 pb-4 border-b last:border-0">

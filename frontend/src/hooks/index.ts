@@ -8,7 +8,6 @@ export {
   useDashboardMetrics,
   useDashboardTimeline,
   type DashboardMetrics,
-  type TimelineData,
 } from './use-dashboard-metrics';
 
 // Admin Dashboard Hooks
@@ -16,15 +15,12 @@ export {
   useAdminMetrics,
   useUsersAnalytics,
   useApisAnalytics,
-  type AdminMetrics,
-  type UsersAnalyticsData,
-  type ApisAnalyticsData,
 } from './use-admin-metrics';
 
 // Activity & Notifications Hooks
 export {
   useActivityLog,
-  type ActivityLogItem,
+  type ActivityItem,
 } from './use-activity-log';
 
 export {

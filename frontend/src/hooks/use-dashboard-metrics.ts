@@ -62,7 +62,7 @@ export function useDashboardMetrics(options: UseDashboardMetricsOptions = {}) {
   );
 
   return {
-    metrics: data,
+    data,
     isLoading,
     isValidating,
     error: error?.message || null,

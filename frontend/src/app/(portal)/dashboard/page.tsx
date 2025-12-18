@@ -1,99 +1,203 @@
-"use client";
+'use client';
 
-import { useUser } from "@/hooks/use-user";
-import { Clock, Key, KeyRound } from "lucide-react";
-import { useApiData } from "@/hooks/use-api-data";
-import Link from "next/link";
-import Head from "next/head";
+import { useUser } from '@/hooks/use-user';
+import { useDashboardMetrics, useDashboardTimeline } from '@/hooks';
+import { useApiData } from '@/hooks/use-api-data';
+import { Activity, Key, TrendingUp, CheckCircle2, Plus, BookOpen, Search } from 'lucide-react';
+import Link from 'next/link';
+import { format } from 'date-fns';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import DashboardSkeleton from "@/components/Dashboard/DashboardSkeleton";
-import ApiKeys from "@/components/Dashboard/ApiKeys";
-import { ApiKey, ApiInfo } from "@/components/Dashboard/types";
+import { Button } from '@/components/ui/button';
+import {
+  DashboardLayout,
+  DashboardHeader,
+  DashboardGrid,
+  DashboardSection,
+  MetricCard,
+  LineChart,
+  ChartContainer,
+} from '@/components/Dashboard';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export default function Dashboard() {
   const { user } = useUser();
+  const { data: metrics, isLoading: metricsLoading, error: metricsError } = useDashboardMetrics();
+  const { timeline, isLoading: timelineLoading, error: timelineError } = useDashboardTimeline();
   
-  const { data: keysData, isLoading: keysLoading } = useApiData<{ keys: ApiKey[] }>({
-    endpoint: "/api/keys",
-    dependencies: [user?.id],
-  });
-  
-  const { data: apisData, isLoading: apisLoading } = useApiData<{ apis: ApiInfo[] }>({
-    endpoint: "/api/apis",
+  // Fetch user's API keys
+  const { data: keysData, isLoading: keysLoading } = useApiData<{ keys: any[] }>({
+    endpoint: '/api/keys',
     dependencies: [user?.id],
   });
 
-  // Derived metrics
-  const activeKeysCount = keysData?.keys?.filter(key => key.status === "active").length || 0;
-  const totalApisCount = apisData?.apis?.length || 0;
-
-  if (keysLoading || apisLoading) {
-    return <DashboardSkeleton />;
-  }
+  const firstName = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Developer';
+  const memberSince = user?.createdAt ? format(new Date(user.createdAt), 'MMMM yyyy') : 'recently';
 
   return (
-    <>
-      <Head>
-        <title>Dashboard - API Developer Portal</title>
-        <meta name="description" content="Manage your API keys and explore available APIs." />
-        <meta property="og:title" content="Dashboard - API Developer Portal" />
-        <meta property="og:description" content="Manage your API keys and explore available APIs." />
-        <meta property="og:image" content="/logo.png" />
-        <meta property="og:url" content="https://portal.devchihub.com/dashboard" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Head>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Welcome, {user?.firstName || "Developer"}</h1>
-        </div>
+    <DashboardLayout>
+      {/* Welcome Section */}
+      <DashboardHeader
+        title={`Welcome back, ${firstName}!`}
+        description={`Member since ${memberSince}`}
+      />
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Metrics Row */}
+      <DashboardGrid cols={4}>
+        {metricsLoading ? (
+          <>
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="pb-2">
+                  <Skeleton className="h-4 w-24" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-16 mb-2" />
+                  <Skeleton className="h-3 w-20" />
+                </CardContent>
+              </Card>
+            ))}
+          </>
+        ) : metricsError ? (
+          <Card className="col-span-4">
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Unable to load metrics</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <MetricCard
+              title="Total API Keys"
+              value={metrics?.overview?.totalKeys || 0}
+              icon={Key}
+              href="/dashboard/my-keys"
+            />
+            <MetricCard
+              title="Active Keys"
+              value={metrics?.overview?.activeKeys || 0}
+              icon={Activity}
+              href="/dashboard/my-keys"
+            />
+            <MetricCard
+              title="Requests (30d)"
+              value={metrics?.overview?.totalRequests || 0}
+              icon={TrendingUp}
+            />
+            <MetricCard
+              title="Success Rate"
+              value={`${metrics?.overview?.successRate || 0}%`}
+              icon={CheckCircle2}
+            />
+          </>
+        )}
+      </DashboardGrid>
+
+      {/* Usage Chart Section */}
+      <DashboardSection
+        title="Usage Overview"
+        description="Daily API requests over the last 30 days"
+      >
+        <ChartContainer isLoading={timelineLoading} error={!!timelineError}>
+          {timeline && timeline.length > 0 ? (
+            <LineChart
+              data={timeline}
+              xKey="date"
+              lines={[
+                { key: 'totalRequests', name: 'Requests', color: 'hsl(var(--primary))' },
+              ]}
+              height={300}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+              <p>No usage data available yet</p>
+            </div>
+          )}
+        </ChartContainer>
+      </DashboardSection>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Recent API Keys */}
+        <DashboardSection title="Recent API Keys" description="Your most recently created keys">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Active API Keys</CardTitle>
-              <KeyRound className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeKeysCount}</div>
-              <p className="text-xs text-muted-foreground pt-1">
-                <Link href="/dashboard/my-keys" className="hover:underline">
-                  {activeKeysCount === 0 ? "Create your first key" : "Manage your keys"}
+            <CardContent className="pt-6">
+              {keysLoading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                      <Skeleton className="h-6 w-16" />
+                    </div>
+                  ))}
+                </div>
+              ) : keysData?.keys && keysData.keys.length > 0 ? (
+                <div className="space-y-4">
+                  {keysData.keys.slice(0, 5).map((key: any) => (
+                    <div key={key.id} className="flex items-center justify-between border-b last:border-0 pb-3 last:pb-0">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{key.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {key.apiName} • Created {format(new Date(key.createdAt), 'MMM d')}
+                        </p>
+                      </div>
+                      <Badge variant={key.status === 'active' ? 'default' : 'secondary'}>
+                        {key.status}
+                      </Badge>
+                    </div>
+                  ))}
+                  <Link href="/dashboard/my-keys">
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      View All Keys
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Key className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground mb-4">No API keys yet</p>
+                  <Link href="/dashboard/my-keys">
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Your First Key
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </DashboardSection>
+
+        {/* Quick Actions */}
+        <DashboardSection title="Quick Actions" description="Common tasks and shortcuts">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-3">
+                <Link href="/dashboard/my-keys" className="block">
+                  <Button variant="outline" className="w-full justify-start" size="lg">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New API Key
+                  </Button>
                 </Link>
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Available APIs</CardTitle>
-              <Key className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalApisCount}</div>
-              <p className="text-xs text-muted-foreground pt-1">
-                <Link href="/dashboard/available-apis" className="hover:underline">
-                  View available APIs
+                <Link href="/dashboard/available-apis" className="block">
+                  <Button variant="outline" className="w-full justify-start" size="lg">
+                    <Search className="h-4 w-4 mr-2" />
+                    Browse Available APIs
+                  </Button>
                 </Link>
-              </p>
+                <Link href="/dashboard/docs" className="block">
+                  <Button variant="outline" className="w-full justify-start" size="lg">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    View Documentation
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Status</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">All Systems</div>
-              <p className="text-xs text-green-500 font-medium pt-1">
-                Operational
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-        <ApiKeys keysData={keysData ?? undefined} />
+        </DashboardSection>
       </div>
-    </>
+    </DashboardLayout>
   );
 }

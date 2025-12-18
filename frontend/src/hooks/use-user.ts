@@ -15,9 +15,8 @@ export function useUser() {
     user: user ? {
       id: user.id,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      fullName: `${user.firstName} ${user.lastName}`,
+      full_name: user.full_name,
+      phone: user.phone,
       role: user.role,
       createdAt: user.createdAt,
     } : null,
