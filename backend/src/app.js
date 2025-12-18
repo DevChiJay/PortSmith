@@ -11,6 +11,8 @@ const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/apis');
 const keyRoutes = require('./routes/keys');
 const gatewayRoutes = require('./routes/gateway');
+const adminRoutes = require('./routes/admin');
+const userRoutes = require('./routes/user');
 
 // Create Express app
 const app = express();
@@ -61,6 +63,8 @@ app.use('/uploads', (req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/apis', apiRoutes);
 app.use('/api/keys', keyRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/user', userRoutes);
 app.use('/gateway', gatewayRoutes);
 
 // Home route
@@ -80,21 +84,37 @@ app.get('/api/docs', (req, res) => {
       auth: {
         'GET /api/auth/me': 'Get current user profile (requires auth)'
       },
+      user: {
+        'GET /api/user/metrics/overview': 'Get user dashboard overview metrics (requires auth)',
+        'GET /api/user/metrics/timeline': 'Get user request timeline for last 30 days (requires auth)',
+        'GET /api/user/notifications': 'Get user notifications (requires auth)',
+        'GET /api/user/profile': 'Get user profile (requires auth)',
+        'PUT /api/user/profile': 'Update user profile (requires auth)'
+      },
       apis: {
         'GET /api/apis': 'Get all available APIs',
         'GET /api/apis/featured': 'Get 6 featured APIs',
         'GET /api/apis/:idOrSlug': 'Get details for a specific API',
-        'POST /api/apis': 'Add a new API (requires auth)',
-        'PUT /api/apis/:id': 'Update an API (requires auth)',
-        'DELETE /api/apis/:id': 'Deactivate an API (requires auth)'
+        'POST /api/apis': 'Add a new API (requires admin auth)',
+        'PUT /api/apis/:id': 'Update an API (requires admin auth)',
+        'DELETE /api/apis/:id': 'Deactivate an API (requires admin auth)'
       },
       keys: {
-        'GET /api/keys': 'Get all your API keys (requires auth)',
+        'GET /api/keys': 'Get all your API keys with usage stats (requires auth)',
         'GET /api/keys/:id': 'Get a specific API key (requires auth)',
         'POST /api/keys': 'Generate a new API key (requires auth)',
         'PUT /api/keys/:id': 'Update an API key (requires auth)',
         'POST /api/keys/:id/revoke': 'Revoke an API key (requires auth)',
         'GET /api/keys/:id/metrics': 'Get usage metrics for a key (requires auth)'
+      },
+      admin: {
+        'GET /api/admin/analytics/overview': 'Get admin overview analytics (requires admin auth)',
+        'GET /api/admin/analytics/users': 'Get paginated user list with analytics (requires admin auth)',
+        'GET /api/admin/analytics/apis': 'Get API usage statistics (requires admin auth)',
+        'GET /api/admin/analytics/activity': 'Get recent activity log (requires admin auth)',
+        'GET /api/admin/users/:id': 'Get user details by ID (requires admin auth)',
+        'PUT /api/admin/users/:id': 'Update user details (requires admin auth)',
+        'DELETE /api/admin/users/:id': 'Delete user (requires admin auth)'
       },
       gateway: {
         'ALL /gateway/:apiName/*': 'Make requests to external APIs (requires API key)'

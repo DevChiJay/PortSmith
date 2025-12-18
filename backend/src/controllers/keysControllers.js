@@ -2,25 +2,110 @@ const keyManagementService = require('../services/keyManagement');
 const metricsService = require('../services/metricsService');
 const logger = require('../utils/logger');
 
-// Get all keys for the authenticated user
+// Get all keys for the authenticated user with usage statistics
 exports.getUserKeys = async (req, res) => {
   try {
     const userId = req.user.id; // MongoDB ObjectId from JWT
     const keys = await keyManagementService.getUserKeys(userId);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     
-    // Filter out sensitive data from the response
-    const keyList = keys.map(key => ({
-      id: key._id,
-      name: key.name,
-      apiName: key.apiId.name,
-      status: key.status,
-      createdAt: key.createdAt,
-      expiresAt: key.expiresAt,
-      lastUsed: key.lastUsed,
-      permissions: key.permissions
-    }));
+    // Get usage statistics for each key
+    const UsageLog = require('../models/UsageLog');
+    const keyListWithStats = await Promise.all(
+      keys.map(async (key) => {
+        // Get total requests for this key
+        const totalRequests = await UsageLog.countDocuments({ 
+          apiKeyId: key._id 
+        });
+
+        // Get requests in last 7 days
+        const last7DaysRequests = await UsageLog.countDocuments({
+          apiKeyId: key._id,
+          timestamp: { $gte: sevenDaysAgo }
+        });
+
+        // Get requests in last 30 days with success rate
+        const last30DaysStats = await UsageLog.aggregate([
+          {
+            $match: {
+              apiKeyId: key._id,
+              timestamp: { $gte: thirtyDaysAgo }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: 1 },
+              successCount: {
+                $sum: {
+                  $cond: [{ $lt: ['$responseStatus', 400] }, 1, 0]
+                }
+              },
+              avgResponseTime: { $avg: '$responseTime' }
+            }
+          }
+        ]);
+
+        const stats30Days = last30DaysStats.length > 0 ? last30DaysStats[0] : {
+          total: 0,
+          successCount: 0,
+          avgResponseTime: 0
+        };
+
+        const successRate = stats30Days.total > 0
+          ? ((stats30Days.successCount / stats30Days.total) * 100).toFixed(2)
+          : 0;
+
+        // Get 7-day trend (daily breakdown)
+        const trendData = await UsageLog.aggregate([
+          {
+            $match: {
+              apiKeyId: key._id,
+              timestamp: { $gte: sevenDaysAgo }
+            }
+          },
+          {
+            $group: {
+              _id: {
+                day: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } }
+              },
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $sort: { '_id.day': 1 }
+          }
+        ]);
+
+        const trend = trendData.map(d => ({
+          date: d._id.day,
+          requests: d.count
+        }));
+
+        return {
+          id: key._id,
+          name: key.name,
+          apiName: key.apiId.name,
+          apiId: key.apiId._id,
+          status: key.status,
+          createdAt: key.createdAt,
+          expiresAt: key.expiresAt,
+          lastUsed: key.lastUsed,
+          permissions: key.permissions,
+          usage: {
+            totalRequests,
+            last7Days: last7DaysRequests,
+            last30Days: stats30Days.total,
+            successRate: parseFloat(successRate),
+            avgResponseTime: Math.round(stats30Days.avgResponseTime || 0),
+            trend
+          }
+        };
+      })
+    );
     
-    res.json({ keys: keyList });
+    res.json({ keys: keyListWithStats });
   } catch (error) {
     logger.error('Error getting user keys:', error);
     res.status(500).json({

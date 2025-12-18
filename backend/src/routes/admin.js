@@ -1,0 +1,21 @@
+const express = require('express');
+const router = express.Router();
+const adminController = require('../controllers/adminControllers');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
+
+// Apply authentication and admin authorization to all admin routes
+router.use(requireAuth);
+router.use(requireAdmin);
+
+// Admin analytics endpoints
+router.get('/analytics/overview', adminController.getOverviewAnalytics);
+router.get('/analytics/users', adminController.getUsersAnalytics);
+router.get('/analytics/apis', adminController.getApisAnalytics);
+router.get('/analytics/activity', adminController.getActivityLog);
+
+// Admin user management endpoints
+router.get('/users/:id', adminController.getUserById);
+router.put('/users/:id', adminController.updateUser);
+router.delete('/users/:id', adminController.deleteUser);
+
+module.exports = router;
