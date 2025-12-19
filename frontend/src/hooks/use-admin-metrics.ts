@@ -5,38 +5,22 @@ import { useApiClient } from './use-api-client';
 
 export interface AdminOverview {
   totalUsers: number;
-  totalKeys: number;
-  activeKeys: number;
+  totalApiKeys: number;
+  activeApiKeys: number;
   totalRequests: number;
   activeUsers: number;
+  newUsers: number;
+  totalApis: number;
   successRate: number;
-  errorRate: string;
   avgResponseTime: number;
-}
-
-export interface GrowthData {
-  date: string;
-  users: number;
-  keys: number;
-}
-
-export interface TopApi {
-  apiId: string;
-  apiName: string;
-  requestCount: number;
-}
-
-export interface AdminDashboardMetrics {
-  overview: AdminOverview;
-  growth: GrowthData[];
-  topApis: TopApi[];
+  period: string;
 }
 
 export interface UserAnalytics {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: 'user' | 'admin';
   isVerified: boolean;
   avatarUrl?: string;
   joinDate: string;
@@ -61,15 +45,13 @@ export interface ApiAnalytics {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  activeKeys: number;
   totalKeys: number;
+  activeKeys: number;
   totalRequests: number;
-  successCount: number;
-  errorCount: number;
-  errorRate: number;
+  uniqueUsers: number;
   successRate: number;
   avgResponseTime: number;
+  errorRate: number;
 }
 
 interface UseAdminMetricsOptions {
@@ -88,10 +70,10 @@ export function useAdminMetrics(options: UseAdminMetricsOptions = {}) {
   } = options;
 
   const fetcher = async () => {
-    return await request<AdminDashboardMetrics>('/api/admin/analytics/overview');
+    return await request<{ overview: AdminOverview }>('/api/admin/analytics/overview');
   };
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<AdminDashboardMetrics>(
+  const { data, error, isLoading, isValidating, mutate } = useSWR<{ overview: AdminOverview }>(
     '/api/admin/analytics/overview',
     fetcher,
     {
@@ -103,7 +85,7 @@ export function useAdminMetrics(options: UseAdminMetricsOptions = {}) {
   );
 
   return {
-    metrics: data,
+    data: data?.overview,
     isLoading,
     isValidating,
     error: error?.message || null,

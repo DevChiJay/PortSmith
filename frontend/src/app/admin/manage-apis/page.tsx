@@ -1,210 +1,204 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { ChevronDown, ChevronUp, Download, MoreHorizontal, Plus, Search } from "lucide-react"
+import { useState } from 'react';
+import { useApisAnalytics } from '@/hooks/use-admin-metrics';
+import { useApiData } from '@/hooks/use-api-data';
+import { Plus, Search, MoreVertical, Key, Activity, Users, TrendingUp } from 'lucide-react';
+import { format } from 'date-fns';
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
-const users = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Developer",
-    status: "Active",
-    lastActive: "2 hours ago",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "Admin",
-    status: "Active",
-    lastActive: "5 minutes ago",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    role: "Developer",
-    status: "Inactive",
-    lastActive: "3 days ago",
-  },
-  {
-    id: "4",
-    name: "Alice Williams",
-    email: "alice@example.com",
-    role: "Developer",
-    status: "Active",
-    lastActive: "1 hour ago",
-  },
-  {
-    id: "5",
-    name: "Charlie Brown",
-    email: "charlie@example.com",
-    role: "Admin",
-    status: "Active",
-    lastActive: "Just now",
-  },
-]
+interface Api {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  baseUrl?: string;
+  documentation?: string;
+}
 
-export default function AdminPage() {
-  const [sortField, setSortField] = useState("name")
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+interface ApisResponse {
+  apis: Api[];
+}
 
-  const handleSort = (field: string) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
-    } else {
-      setSortField(field)
-      setSortDirection("asc")
-    }
+export default function ManageApisPage() {
+  const [search, setSearch] = useState('');
+  const { apis: analyticsApis, isLoading: analyticsLoading, error: analyticsError } = useApisAnalytics();
+  const { data: catalogData, isLoading: catalogLoading, error: catalogError } = useApiData<ApisResponse>({
+    endpoint: '/api/apis',
+    method: 'GET',
+  });
+
+  const catalogApis = catalogData?.apis || [];
+
+  // Merge catalog data with analytics
+  const apisWithAnalytics = catalogApis.map((api) => {
+    const analytics = analyticsApis.find((a) => a.id === api.id);
+    return {
+      ...api,
+      analytics,
+    };
+  });
+
+  const filteredApis = apisWithAnalytics?.filter((api) =>
+    api.name.toLowerCase().includes(search.toLowerCase()) ||
+    api.slug.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (catalogError || analyticsError) {
+    return (
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Error loading APIs: {catalogError?.message || analyticsError}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
-  const sortedUsers = [...users].sort((a, b) => {
-    const aValue = a[sortField as keyof typeof a]
-    const bValue = b[sortField as keyof typeof b]
-
-    if (sortDirection === "asc") {
-      return aValue.localeCompare(bValue)
-    } else {
-      return bValue.localeCompare(aValue)
-    }
-  })
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-          <p className="text-muted-foreground">Manage user accounts and permissions</p>
+          <h1 className="text-3xl font-bold tracking-tight">Manage APIs</h1>
+          <p className="text-muted-foreground mt-1">
+            Configure and monitor API endpoints
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add User
-          </Button>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        </div>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add API
+        </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search users..." className="pl-8 w-full md:max-w-sm" />
-        </div>
-      </div>
+      {/* Search */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search APIs by name or slug..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("name")}>
-                <div className="flex items-center">
-                  Name
-                  {sortField === "name" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
+      {/* APIs Grid */}
+      {catalogLoading || analyticsLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-20 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredApis?.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            No APIs found
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredApis?.map((api) => (
+            <Card key={api.id}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle>{api.name}</CardTitle>
+                    <CardDescription>/{api.slug}</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
                 </div>
-              </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("email")}>
-                <div className="flex items-center">
-                  Email
-                  {sortField === "email" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-                </div>
-              </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("role")}>
-                <div className="flex items-center">
-                  Role
-                  {sortField === "role" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-                </div>
-              </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("status")}>
-                <div className="flex items-center">
-                  Status
-                  {sortField === "status" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-                </div>
-              </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("lastActive")}>
-                <div className="flex items-center">
-                  Last Active
-                  {sortField === "lastActive" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-                </div>
-              </TableHead>
-              <TableHead className="w-[50px]"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Badge variant={user.role === "Admin" ? "default" : "outline"}>{user.role}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.status === "Active" ? "success" : "secondary"}>{user.status}</Badge>
-                </TableCell>
-                <TableCell>{user.lastActive}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit user</DropdownMenuItem>
-                      <DropdownMenuItem>View activity</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">Delete user</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+                <Badge variant="default" className="w-fit">
+                  Active
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                {api.analytics ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                        <Key className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Keys</p>
+                        <p className="text-sm font-semibold">
+                          {api.analytics.activeKeys}/{api.analytics.totalKeys}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                        <Activity className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Requests</p>
+                        <p className="text-sm font-semibold">
+                          {api.analytics.totalRequests.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
+                        <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Users</p>
+                        <p className="text-sm font-semibold">{api.analytics.uniqueUsers}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
+                        <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Success</p>
+                        <p className="text-sm font-semibold">{api.analytics.successRate}%</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    No analytics data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
-  )
+  );
 }
