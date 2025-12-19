@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useApisAnalytics } from '@/hooks/use-admin-metrics';
 import { useApiData } from '@/hooks/use-api-data';
-import { Plus, Search, MoreVertical, Key, Activity, Users, TrendingUp } from 'lucide-react';
+import { Plus, Search, MoreVertical, Key, Activity, Users, TrendingUp, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,16 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { AddApiDialog } from '@/components/admin/AddApiDialog';
+import { EditApiDialog } from '@/components/admin/EditApiDialog';
+import { DeleteApiDialog } from '@/components/admin/DeleteApiDialog';
+import { mutate } from 'swr';
 
 interface Api {
   id: string;
@@ -44,6 +54,11 @@ export default function ManageApisPage() {
   });
 
   const catalogApis = catalogData?.apis || [];
+
+  const refreshData = () => {
+    mutate('/api/apis');
+    mutate('/api/admin/analytics/apis');
+  };
 
   // Merge catalog data with analytics
   const apisWithAnalytics = catalogApis.map((api) => {
@@ -82,10 +97,7 @@ export default function ManageApisPage() {
             Configure and monitor API endpoints
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add API
-        </Button>
+        <AddApiDialog onSuccess={refreshData} />
       </div>
 
       {/* Search */}
@@ -134,9 +146,39 @@ export default function ManageApisPage() {
                     <CardTitle>{api.name}</CardTitle>
                     <CardDescription>/{api.slug}</CardDescription>
                   </div>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <EditApiDialog
+                        api={api}
+                        onSuccess={refreshData}
+                        trigger={
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit API
+                          </DropdownMenuItem>
+                        }
+                      />
+                      <DeleteApiDialog
+                        apiId={api.id}
+                        apiName={api.name}
+                        onSuccess={refreshData}
+                        trigger={
+                          <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete API
+                          </DropdownMenuItem>
+                        }
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <Badge variant="default" className="w-fit">
                   Active

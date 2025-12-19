@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUsersAnalytics } from '@/hooks/use-admin-metrics';
-import { Search, UserPlus, Filter, MoreVertical, Shield, ShieldCheck, Mail } from 'lucide-react';
+import { Search, UserPlus, Filter, MoreVertical, Shield, ShieldCheck, Mail, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { EditUserDialog } from '@/components/admin/EditUserDialog';
+import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
+import { mutate } from 'swr';
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -43,6 +52,10 @@ export default function AdminUsersPage() {
     roleFilter,
     statusFilter
   );
+
+  const refreshData = () => {
+    mutate(`/api/admin/analytics/users?page=${page}&limit=${limit}&search=${search}&role=${roleFilter}&status=${statusFilter}`);
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -228,9 +241,45 @@ export default function AdminUsersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <EditUserDialog
+                              user={{
+                                id: user.id,
+                                full_name: user.name,
+                                email: user.email,
+                                role: user.role,
+                                is_verified: user.isVerified,
+                              }}
+                              onSuccess={refreshData}
+                              trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Pencil className="h-4 w-4 mr-2" />
+                                  Edit User
+                                </DropdownMenuItem>
+                              }
+                            />
+                            <DeleteUserDialog
+                              userId={user.id}
+                              userEmail={user.email}
+                              onSuccess={refreshData}
+                              trigger={
+                                <DropdownMenuItem
+                                  onSelect={(e) => e.preventDefault()}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete User
+                                </DropdownMenuItem>
+                              }
+                            />
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}

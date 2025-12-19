@@ -17,6 +17,11 @@ export {
   useApisAnalytics,
 } from './use-admin-metrics';
 
+export {
+  useApiKeys,
+  type ApiKey,
+} from './use-api-keys';
+
 // Activity & Notifications Hooks
 export {
   useActivityLog,

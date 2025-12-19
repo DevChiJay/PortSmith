@@ -599,3 +599,407 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+/**
+ * Create new API
+ */
+exports.createApi = async (req, res) => {
+  try {
+    const { name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit } = req.body;
+
+    // Validate required fields
+    if (!name || !slug || !description || !baseUrl) {
+      return res.status(400).json({
+        error: 'Validation Error',
+        message: 'Name, slug, description, and base URL are required'
+      });
+    }
+
+    // Check if slug already exists
+    const existingApi = await ApiCatalog.findOne({ slug: slug.toLowerCase() });
+    if (existingApi) {
+      return res.status(409).json({
+        error: 'Conflict',
+        message: 'An API with this slug already exists'
+      });
+    }
+
+    // Create new API
+    const newApi = new ApiCatalog({
+      name,
+      slug: slug.toLowerCase(),
+      description,
+      baseUrl,
+      documentation: documentation || '',
+      endpoints: endpoints || [],
+      authType: authType || 'apiKey',
+      defaultRateLimit: defaultRateLimit || {
+        requests: 100,
+        per: 60 * 60 * 1000
+      },
+      isActive: true
+    });
+
+    await newApi.save();
+
+    logger.info(`Admin ${req.user.id} created new API: ${name} (${slug})`);
+
+    res.status(201).json({
+      message: 'API created successfully',
+      api: {
+        id: newApi._id,
+        name: newApi.name,
+        slug: newApi.slug,
+        description: newApi.description,
+        baseUrl: newApi.baseUrl,
+        isActive: newApi.isActive
+      }
+    });
+  } catch (error) {
+    logger.error('Error creating API:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to create API'
+    });
+  }
+};
+
+/**
+ * Update existing API
+ */
+exports.updateApi = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit, isActive } = req.body;
+
+    const api = await ApiCatalog.findById(id);
+    if (!api) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'API not found'
+      });
+    }
+
+    // If slug is being changed, check if new slug is available
+    if (slug && slug.toLowerCase() !== api.slug) {
+      const existingApi = await ApiCatalog.findOne({ slug: slug.toLowerCase() });
+      if (existingApi) {
+        return res.status(409).json({
+          error: 'Conflict',
+          message: 'An API with this slug already exists'
+        });
+      }
+    }
+
+    // Update fields
+    if (name) api.name = name;
+    if (slug) api.slug = slug.toLowerCase();
+    if (description) api.description = description;
+    if (baseUrl) api.baseUrl = baseUrl;
+    if (documentation !== undefined) api.documentation = documentation;
+    if (endpoints) api.endpoints = endpoints;
+    if (authType) api.authType = authType;
+    if (defaultRateLimit) api.defaultRateLimit = defaultRateLimit;
+    if (typeof isActive === 'boolean') api.isActive = isActive;
+    
+    api.updatedAt = Date.now();
+
+    await api.save();
+
+    logger.info(`Admin ${req.user.id} updated API: ${api.name} (${api.slug})`);
+
+    res.json({
+      message: 'API updated successfully',
+      api: {
+        id: api._id,
+        name: api.name,
+        slug: api.slug,
+        description: api.description,
+        baseUrl: api.baseUrl,
+        isActive: api.isActive
+      }
+    });
+  } catch (error) {
+    logger.error(`Error updating API ${req.params.id}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to update API'
+    });
+  }
+};
+
+/**
+ * Delete API
+ */
+exports.deleteApi = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const api = await ApiCatalog.findById(id);
+    if (!api) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'API not found'
+      });
+    }
+
+    // Check if there are active API keys for this API
+    const activeKeyCount = await ApiKey.countDocuments({ apiId: id, status: 'active' });
+    if (activeKeyCount > 0) {
+      return res.status(400).json({
+        error: 'Validation Error',
+        message: `Cannot delete API. There are ${activeKeyCount} active API keys using this API. Please revoke all keys first.`
+      });
+    }
+
+    // Delete all API keys for this API
+    await ApiKey.deleteMany({ apiId: id });
+
+    // Delete all usage logs for this API
+    await UsageLog.deleteMany({ apiId: id });
+
+    // Delete the API
+    await ApiCatalog.findByIdAndDelete(id);
+
+    logger.info(`Admin ${req.user.id} deleted API: ${api.name} (${api.slug})`);
+
+    res.json({
+      message: 'API and associated data deleted successfully'
+    });
+  } catch (error) {
+    logger.error(`Error deleting API ${req.params.id}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to delete API'
+    });
+  }
+};
+
+/**
+ * Get all API keys with user and API information
+ */
+exports.getAllKeys = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || '';
+    const status = req.query.status || '';
+    const apiId = req.query.apiId || '';
+
+    // Build query
+    const query = {};
+    if (status) {
+      query.status = status;
+    }
+    if (apiId) {
+      query.apiId = apiId;
+    }
+
+    // Get total count
+    const totalKeys = await ApiKey.countDocuments(query);
+
+    // Get keys with user and API data
+    let keys = await ApiKey.find(query)
+      .populate('userId', 'email full_name avatar_url')
+      .populate('apiId', 'name slug')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Apply search filter after population
+    if (search) {
+      keys = keys.filter(key => 
+        key.name.toLowerCase().includes(search.toLowerCase()) ||
+        key.userId?.email.toLowerCase().includes(search.toLowerCase()) ||
+        key.userId?.full_name.toLowerCase().includes(search.toLowerCase()) ||
+        key.apiId?.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Get usage stats for each key
+    const keysWithStats = await Promise.all(
+      keys.map(async (key) => {
+        const requestCount = await UsageLog.countDocuments({ apiKeyId: key._id });
+        const lastUsed = await UsageLog.findOne({ apiKeyId: key._id })
+          .sort({ timestamp: -1 })
+          .select('timestamp')
+          .lean();
+
+        return {
+          id: key._id,
+          name: key.name,
+          key: key.key,
+          status: key.status,
+          createdAt: key.createdAt,
+          expiresAt: key.expiresAt,
+          lastUsed: lastUsed?.timestamp || null,
+          requestCount,
+          user: key.userId ? {
+            id: key.userId._id,
+            email: key.userId.email,
+            name: key.userId.full_name,
+            avatarUrl: key.userId.avatar_url
+          } : null,
+          api: key.apiId ? {
+            id: key.apiId._id,
+            name: key.apiId.name,
+            slug: key.apiId.slug
+          } : null,
+          rateLimit: key.rateLimit
+        };
+      })
+    );
+
+    res.json({
+      keys: keysWithStats,
+      pagination: {
+        page,
+        limit,
+        totalKeys,
+        totalPages: Math.ceil(totalKeys / limit),
+        hasMore: skip + limit < totalKeys
+      }
+    });
+  } catch (error) {
+    logger.error('Error getting all API keys:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve API keys'
+    });
+  }
+};
+
+/**
+ * Update API key (status and/or expiry)
+ */
+exports.updateKey = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, expiresAt } = req.body;
+
+    const updateData = {};
+
+    // Validate and add status if provided
+    if (status) {
+      if (!['active', 'inactive', 'revoked'].includes(status)) {
+        return res.status(400).json({
+          error: 'Validation Error',
+          message: 'Status must be one of: active, inactive, revoked'
+        });
+      }
+      updateData.status = status;
+    }
+
+    // Validate and add expiry date if provided
+    if (expiresAt) {
+      const expiryDate = new Date(expiresAt);
+      if (isNaN(expiryDate.getTime())) {
+        return res.status(400).json({
+          error: 'Validation Error',
+          message: 'Invalid date format'
+        });
+      }
+
+      if (expiryDate < new Date()) {
+        return res.status(400).json({
+          error: 'Validation Error',
+          message: 'Expiry date cannot be in the past'
+        });
+      }
+      updateData.expiresAt = expiryDate;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        error: 'Validation Error',
+        message: 'No valid fields to update'
+      });
+    }
+
+    const key = await ApiKey.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    )
+      .populate('userId', 'email full_name')
+      .populate('apiId', 'name slug')
+      .lean();
+
+    if (!key) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'API key not found'
+      });
+    }
+
+    const updates = [];
+    if (status) updates.push(`status to ${status}`);
+    if (expiresAt) updates.push(`expiry to ${new Date(expiresAt).toISOString()}`);
+    logger.info(`Admin ${req.user.id} updated key ${id}: ${updates.join(', ')}`);
+
+    res.json({
+      message: 'API key updated successfully',
+      key: {
+        id: key._id,
+        name: key.name,
+        status: key.status,
+        expiresAt: key.expiresAt,
+        user: key.userId ? {
+          email: key.userId.email,
+          name: key.userId.full_name
+        } : null,
+        api: key.apiId ? {
+          name: key.apiId.name
+        } : null
+      }
+    });
+  } catch (error) {
+    logger.error(`Error updating key ${req.params.id}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to update API key'
+    });
+  }
+};
+
+/**
+ * Delete API key
+ */
+exports.deleteKey = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const key = await ApiKey.findById(id)
+      .populate('userId', 'email full_name')
+      .populate('apiId', 'name slug')
+      .lean();
+
+    if (!key) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'API key not found'
+      });
+    }
+
+    // Delete the key
+    await ApiKey.findByIdAndDelete(id);
+
+    // Delete all usage logs for this key
+    await UsageLog.deleteMany({ apiKeyId: id });
+
+    logger.info(`Admin ${req.user.id} deleted API key ${id} (${key.name}) for user ${key.userId?.email}`);
+
+    res.json({
+      message: 'API key and associated usage logs deleted successfully'
+    });
+  } catch (error) {
+    logger.error(`Error deleting key ${req.params.id}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to delete API key'
+    });
+  }
+};
+

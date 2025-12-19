@@ -18,4 +18,14 @@ router.get('/users/:id', adminController.getUserById);
 router.put('/users/:id', adminController.updateUser);
 router.delete('/users/:id', adminController.deleteUser);
 
+// Admin API management endpoints
+router.post('/apis', adminController.createApi);
+router.put('/apis/:id', adminController.updateApi);
+router.delete('/apis/:id', adminController.deleteApi);
+
+// Admin API keys management endpoints
+router.get('/keys', adminController.getAllKeys);
+router.put('/keys/:id', adminController.updateKey);
+router.delete('/keys/:id', adminController.deleteKey);
+
 module.exports = router;

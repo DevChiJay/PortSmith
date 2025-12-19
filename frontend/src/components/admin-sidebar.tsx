@@ -25,6 +25,11 @@ const sidebarItems = [
     icon: Users,
   },
   {
+    title: "API Keys",
+    href: "/admin/api-keys",
+    icon: Key,
+  },
+  {
     title: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,
@@ -32,7 +37,7 @@ const sidebarItems = [
   {
     title: "Manage APIs",
     href: "/admin/manage-apis",
-    icon: Key,
+    icon: LayoutDashboard,
   },
 ]
 
