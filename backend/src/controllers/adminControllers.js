@@ -183,6 +183,7 @@ exports.getUsersAnalytics = async (req, res) => {
           name: user.full_name,
           role: user.role,
           isVerified: user.is_verified,
+          isPro: user.isPro || false,
           avatarUrl: user.avatar_url,
           joinDate: user.createdAt,
           apiKeyCount,
@@ -515,12 +516,13 @@ exports.getUserById = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { role, full_name, is_verified } = req.body;
+    const { role, full_name, is_verified, isPro } = req.body;
 
     const updateData = {};
     if (role) updateData.role = role;
     if (full_name) updateData.full_name = full_name;
     if (typeof is_verified === 'boolean') updateData.is_verified = is_verified;
+    if (typeof isPro === 'boolean') updateData.isPro = isPro;
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -543,7 +545,8 @@ exports.updateUser = async (req, res) => {
         email: user.email,
         name: user.full_name,
         role: user.role,
-        isVerified: user.is_verified
+        isVerified: user.is_verified,
+        isPro: user.isPro || false
       },
       message: 'User updated successfully'
     });

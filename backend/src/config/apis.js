@@ -29,6 +29,7 @@ class ApiConfigService {
       
       apis.forEach(api => {
         apiMap[api.slug] = {
+          visibility: api.visibility || 'public',
           baseUrl: api.baseUrl,
           requiresAuth: api.gatewayConfig?.requiresAuth ?? true,
           rateLimit: {

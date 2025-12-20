@@ -50,6 +50,7 @@ export function EditUserDialog({ user, onSuccess, trigger }: EditUserDialogProps
     full_name: user.full_name,
     role: user.role,
     is_verified: user.is_verified,
+    isPro: (user as any).isPro || false,
   });
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export function EditUserDialog({ user, onSuccess, trigger }: EditUserDialogProps
         full_name: user.full_name,
         role: user.role,
         is_verified: user.is_verified,
+        isPro: (user as any).isPro || false,
       });
     }
   }, [open, user]);
@@ -146,6 +148,23 @@ export function EditUserDialog({ user, onSuccess, trigger }: EditUserDialogProps
                 checked={formData.is_verified}
                 onCheckedChange={(checked) =>
                   setFormData((prev) => ({ ...prev, is_verified: checked }))
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="edit-pro" className="cursor-pointer">
+                  Pro Account
+                </Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pro users can create unlimited API keys
+                </p>
+              </div>
+              <Switch
+                id="edit-pro"
+                checked={formData.isPro}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, isPro: checked }))
                 }
               />
             </div>

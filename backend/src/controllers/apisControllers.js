@@ -126,7 +126,8 @@ exports.addApi = async (req, res) => {
       endpoints,
       documentation,
       authType,
-      defaultRateLimit
+      defaultRateLimit,
+      visibility
     } = req.body;
     
     // Validation
@@ -156,7 +157,8 @@ exports.addApi = async (req, res) => {
       endpoints: endpoints || [],
       documentation,
       authType: authType || 'apiKey',
-      defaultRateLimit
+      defaultRateLimit,
+      visibility: visibility || 'public'
     });
     
     await newApi.save();
@@ -194,7 +196,8 @@ exports.updateApi = async (req, res) => {
       documentation,
       authType,
       defaultRateLimit,
-      isActive
+      isActive,
+      visibility
     } = req.body;
     
     const api = await ApiCatalog.findById(apiId);
@@ -215,6 +218,7 @@ exports.updateApi = async (req, res) => {
     if (authType) api.authType = authType;
     if (defaultRateLimit) api.defaultRateLimit = defaultRateLimit;
     if (isActive !== undefined) api.isActive = isActive;
+    if (visibility) api.visibility = visibility;
     
     api.updatedAt = Date.now();
     

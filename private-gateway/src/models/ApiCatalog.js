@@ -17,6 +17,12 @@ const ApiCatalogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  visibility: {
+    type: String,
+    enum: ['public', 'private'],
+    default: 'public',
+    index: true
+  },
   baseUrl: {
     type: String,
     required: true

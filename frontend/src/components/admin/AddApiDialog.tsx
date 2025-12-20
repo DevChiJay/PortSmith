@@ -35,6 +35,7 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
     description: '',
     baseUrl: '',
     documentation: '',
+    visibility: 'public',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,6 +60,7 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
         description: '',
         baseUrl: '',
         documentation: '',
+        visibility: 'public',
       });
       onSuccess?.();
     } catch (error: any) {
@@ -164,6 +166,24 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
                 }
                 placeholder="https://weatherapi.com/docs"
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="visibility">Visibility *</Label>
+              <select
+                id="visibility"
+                value={formData.visibility}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, visibility: e.target.value }))
+                }
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                required
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Public APIs are accessible via gateway.portsmith.dev, Private APIs via privatesmith.dev
+              </p>
             </div>
           </div>
           <DialogFooter>

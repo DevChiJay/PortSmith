@@ -16,6 +16,24 @@ class KeyManagementService {
    */
   async generateKey(userId, keyData) {
     try {
+      // Check user's key limit
+      const User = require('../models/User');
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Count existing active keys for this user
+      const existingKeysCount = await ApiKey.countDocuments({ 
+        userId, 
+        status: { $ne: 'revoked' } 
+      });
+
+      // Enforce key limits: max 2 for regular users, unlimited for pro
+      if (!user.isPro && existingKeysCount >= 2) {
+        throw new Error('Free users are limited to 2 API keys. Upgrade to Pro for unlimited keys.');
+      }
+
       // Validate API exists
       const api = await ApiCatalog.findById(keyData.apiId);
       if (!api) {

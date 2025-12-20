@@ -46,6 +46,7 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
     description: api.description,
     baseUrl: api.baseUrl || '',
     documentation: api.documentation || '',
+    visibility: (api as any).visibility || 'public',
   });
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
         description: api.description,
         baseUrl: api.baseUrl || '',
         documentation: api.documentation || '',
+        visibility: (api as any).visibility || 'public',
       });
     }
   }, [open, api]);
@@ -161,6 +163,24 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
                   setFormData((prev) => ({ ...prev, documentation: e.target.value }))
                 }
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-visibility">Visibility *</Label>
+              <select
+                id="edit-visibility"
+                value={formData.visibility}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, visibility: e.target.value }))
+                }
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                required
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Public APIs are accessible via gateway.portsmith.dev, Private APIs via privatesmith.dev
+              </p>
             </div>
           </div>
           <DialogFooter>
