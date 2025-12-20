@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useUsersAnalytics } from '@/hooks/use-admin-metrics';
-import { Search, UserPlus, Filter, MoreVertical, Shield, ShieldCheck, Mail, Pencil, Trash2 } from 'lucide-react';
+import { UserPlus, Download, Filter, MoreVertical, Shield, ShieldCheck, Mail, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { SearchBar } from '@/components/SearchBar';
+import { FilterChips } from '@/components/FilterChips';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorState } from '@/components/ErrorState';
+import { PageTransition } from '@/components/PageTransition';
+import { exportUsers } from '@/utils/export';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -57,6 +63,36 @@ export default function AdminUsersPage() {
     mutate(`/api/admin/analytics/users?page=${page}&limit=${limit}&search=${search}&role=${roleFilter}&status=${statusFilter}`);
   };
 
+  // Build active filters for FilterChips
+  const activeFilters = useMemo(() => {
+    const filters = [];
+    if (roleFilter && roleFilter !== 'all') {
+      filters.push({ key: 'role', label: 'Role', value: roleFilter });
+    }
+    if (statusFilter && statusFilter !== 'all') {
+      filters.push({ key: 'status', label: 'Status', value: statusFilter });
+    }
+    return filters;
+  }, [roleFilter, statusFilter]);
+
+  const removeFilter = (key: string) => {
+    if (key === 'role') setRoleFilter('');
+    if (key === 'status') setStatusFilter('');
+  };
+
+  const clearAllFilters = () => {
+    setRoleFilter('');
+    setStatusFilter('');
+    setSearch('');
+  };
+
+  const handleExport = () => {
+    if (users && users.length > 0) {
+      exportUsers(users);
+      toast.success('Users exported successfully');
+    }
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -68,17 +104,22 @@ export default function AdminUsersPage() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>Error loading users: {error}</AlertDescription>
-        </Alert>
-      </div>
+      <ErrorBoundary>
+        <div className="p-6">
+          <ErrorState
+            variant="network"
+            message={error}
+            onRetry={refreshData}
+          />
+        </div>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <ErrorBoundary>
+      <PageTransition>
+        <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -87,36 +128,41 @@ export default function AdminUsersPage() {
             Manage platform users and their access
           </p>
         </div>
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Invite User
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={!users || users.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Invite User
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                className="pl-9"
-              />
-            </div>
-            <Select value={roleFilter || 'all'} onValueChange={(value) => {
-              setRoleFilter(value === 'all' ? '' : value);
-              setPage(1);
-            }}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="All Roles" />
-              </SelectTrigger>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <SearchBar
+                  value={search}
+                  onChange={(value) => {
+                    setSearch(value);
+                    setPage(1);
+                  }}
+                  placeholder="Search by name or email..."
+                />
+              </div>
+              <Select value={roleFilter || 'all'} onValueChange={(value) => {
+                setRoleFilter(value === 'all' ? '' : value);
+                setPage(1);
+              }}>
+                <SelectTrigger className="w-full sm:w-[150px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="All Roles" />
+                </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="user">User</SelectItem>
@@ -136,6 +182,12 @@ export default function AdminUsersPage() {
                 <SelectItem value="unverified">Unverified</SelectItem>
               </SelectContent>
             </Select>
+            </div>
+            <FilterChips
+              filters={activeFilters}
+              onRemove={removeFilter}
+              onClearAll={clearAllFilters}
+            />
           </div>
         </CardContent>
       </Card>
@@ -315,5 +367,7 @@ export default function AdminUsersPage() {
         </CardContent>
       </Card>
     </div>
+      </PageTransition>
+    </ErrorBoundary>
   );
 }

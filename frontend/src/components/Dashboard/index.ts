@@ -14,6 +14,7 @@ export {
 
 // Metric & Card Components
 export { MetricCard, StatCard, MetricCardList } from './MetricCard';
+export { AnimatedMetricCard } from './AnimatedMetricCard';
 
 // Chart Components
 export { ChartContainer, ChartWrapper, EmptyChartState } from './ChartContainer';
@@ -32,3 +33,4 @@ export { RotateKeyDialog } from './RotateKeyDialog';
 export { Sidebar } from './Sidebar';
 export { MobileNav } from './MobileNav';
 export { NavLink } from './NavLink';
+

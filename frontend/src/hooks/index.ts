@@ -31,4 +31,19 @@ export {
 export {
   useNotifications,
   type Notification,
+  type NotificationType,
+  type NotificationCategory,
 } from './use-notifications';
+
+// Service Worker & PWA Hooks
+export {
+  useServiceWorker,
+  useOnlineStatus,
+} from './use-service-worker';
+
+// Other Utility Hooks
+export { useMobile, useIsMobile } from './use-mobile';
+export { useUser } from './use-user';
+export { useApiClient } from './use-api-client';
+export { useApiData } from './use-api-data';
+export { useToast } from './use-toast';

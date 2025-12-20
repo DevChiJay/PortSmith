@@ -14,12 +14,15 @@ import {
   Calendar,
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
+import { toast } from 'sonner';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorState } from '@/components/ErrorState';
+import { PageTransition } from '@/components/PageTransition';
+import { exportAnalytics } from '@/utils/export';
 import {
   Select,
   SelectContent,
@@ -48,45 +51,28 @@ export default function AdminAnalyticsPage() {
   };
 
   const handleExport = () => {
-    // Create CSV data
-    const csvData = [
-      ['API Name', 'Total Keys', 'Active Keys', 'Total Requests', 'Success Rate', 'Avg Response Time', 'Error Rate'],
-      ...apis.map((api) => [
-        api.name,
-        api.totalKeys,
-        api.activeKeys,
-        api.totalRequests,
-        `${api.successRate}%`,
-        `${api.avgResponseTime}ms`,
-        `${api.errorRate}%`,
-      ]),
-    ];
-
-    const csv = csvData.map((row) => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `api-analytics-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    exportAnalytics({ apis, overview }, 'apis');
+    toast.success('Analytics data exported successfully');
   };
 
   if (metricsError || apisError) {
     return (
-      <div className="p-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Error loading analytics: {metricsError || apisError}
-          </AlertDescription>
-        </Alert>
-      </div>
+      <ErrorBoundary>
+        <div className="p-6">
+          <ErrorState
+            variant="network"
+            message={metricsError || apisError}
+            onRetry={() => window.location.reload()}
+          />
+        </div>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <ErrorBoundary>
+      <PageTransition>
+        <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -319,5 +305,7 @@ export default function AdminAnalyticsPage() {
         </CardContent>
       </Card>
     </div>
+      </PageTransition>
+    </ErrorBoundary>
   );
 }

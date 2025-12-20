@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react"
 
+/**
+ * Hook to detect mobile screen size (< 768px)
+ * Returns boolean indicating if screen is mobile-sized
+ */
 export const useMobile = () => {
   const [isMobile, setIsMobile] = useState(false)
 
@@ -24,3 +28,6 @@ export const useMobile = () => {
 
   return isMobile
 }
+
+// Alias for compatibility
+export const useIsMobile = useMobile;

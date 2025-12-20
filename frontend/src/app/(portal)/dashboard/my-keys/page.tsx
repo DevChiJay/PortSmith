@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useApiData } from '@/hooks/use-api-data';
 import { useUser } from '@/hooks/use-user';
-import { Plus, Search, Filter, Key, Copy, Eye, Calendar, TrendingUp, Trash2 } from 'lucide-react';
+import { Plus, Download, Filter, Key, Copy, Eye, Calendar, TrendingUp, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -13,9 +13,15 @@ import {
   DashboardSection,
 } from '@/components/Dashboard';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { SearchBar } from '@/components/SearchBar';
+import { FilterChips } from '@/components/FilterChips';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorState } from '@/components/ErrorState';
+import { PageTransition } from '@/components/PageTransition';
+import { exportApiKeys } from '@/utils/export';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -94,6 +100,35 @@ export default function MyApiKeysPage() {
   const apiKeys = data?.keys || [];
   const availableApis = apisData?.apis || [];
 
+  // Build active filters for FilterChips
+  const activeFilters = useMemo(() => {
+    const filters = [];
+    if (statusFilter && statusFilter !== 'all') {
+      filters.push({ key: 'status', label: 'Status', value: statusFilter });
+    }
+    if (apiFilter && apiFilter !== 'all') {
+      const apiName = availableApis.find(api => api.id === apiFilter)?.name || apiFilter;
+      filters.push({ key: 'api', label: 'API', value: apiName });
+    }
+    return filters;
+  }, [statusFilter, apiFilter, availableApis]);
+
+  const removeFilter = (key: string) => {
+    if (key === 'status') setStatusFilter('all');
+    if (key === 'api') setApiFilter('all');
+  };
+
+  const clearAllFilters = () => {
+    setStatusFilter('all');
+    setApiFilter('all');
+    setSearchQuery('');
+  };
+
+  const handleExport = () => {
+    exportApiKeys(filteredKeys);
+    toast.success('API keys exported successfully');
+  };
+
   // Filter and search logic
   const filteredKeys = useMemo(() => {
     return apiKeys.filter((key) => {
@@ -135,66 +170,82 @@ export default function MyApiKeysPage() {
 
   if (error) {
     return (
-      <DashboardLayout>
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>Error loading API keys: {error.message}</AlertDescription>
-        </Alert>
-      </DashboardLayout>
+      <ErrorBoundary>
+        <DashboardLayout>
+          <ErrorState
+            variant="network"
+            message={error.message}
+            onRetry={refetch}
+          />
+        </DashboardLayout>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <DashboardLayout>
+    <ErrorBoundary>
+      <PageTransition>
+        <DashboardLayout>
       <DashboardHeader
         title="My API Keys"
         description="Manage and monitor your API keys"
         action={
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Key
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExport} disabled={filteredKeys.length === 0}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create New Key
+            </Button>
+          </div>
         }
       />
 
       {/* Filters Section */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by key name or API..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search by key name or API..."
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[150px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="revoked">Revoked</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={apiFilter} onValueChange={setApiFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filter by API" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All APIs</SelectItem>
+                  {availableApis.map((api) => (
+                    <SelectItem key={api.id || api._id} value={api.id || api._id}>
+                      {api.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="revoked">Revoked</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={apiFilter} onValueChange={setApiFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by API" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All APIs</SelectItem>
-                {availableApis.map((api) => (
-                  <SelectItem key={api.id || api._id} value={api.id || api._id}>
-                    {api.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FilterChips
+              filters={activeFilters}
+              onRemove={removeFilter}
+              onClearAll={clearAllFilters}
+            />
           </div>
         </CardContent>
       </Card>
@@ -509,5 +560,7 @@ export default function MyApiKeysPage() {
         />
       )}
     </DashboardLayout>
+      </PageTransition>
+    </ErrorBoundary>
   );
 }

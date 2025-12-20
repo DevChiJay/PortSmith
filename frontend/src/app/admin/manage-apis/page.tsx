@@ -3,11 +3,14 @@
 import { useState } from 'react';
 import { useApisAnalytics } from '@/hooks/use-admin-metrics';
 import { useApiData } from '@/hooks/use-api-data';
-import { Plus, Search, MoreVertical, Key, Activity, Users, TrendingUp, Pencil, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Key, Activity, Users, TrendingUp, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { SearchBar } from '@/components/SearchBar';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorState } from '@/components/ErrorState';
+import { PageTransition } from '@/components/PageTransition';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -76,44 +79,43 @@ export default function ManageApisPage() {
 
   if (catalogError || analyticsError) {
     return (
-      <div className="p-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Error loading APIs: {catalogError?.message || analyticsError}
-          </AlertDescription>
-        </Alert>
-      </div>
+      <ErrorBoundary>
+        <div className="p-6">
+          <ErrorState
+            variant="network"
+            message={catalogError?.message || analyticsError}
+            onRetry={refreshData}
+          />
+        </div>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Manage APIs</h1>
-          <p className="text-muted-foreground mt-1">
-            Configure and monitor API endpoints
-          </p>
-        </div>
-        <AddApiDialog onSuccess={refreshData} />
-      </div>
-
-      {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search APIs by name or slug..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+    <ErrorBoundary>
+      <PageTransition>
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Manage APIs</h1>
+              <p className="text-muted-foreground mt-1">
+                Configure and monitor API endpoints
+              </p>
+            </div>
+            <AddApiDialog onSuccess={refreshData} />
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Search */}
+          <Card>
+            <CardContent className="pt-6">
+              <SearchBar
+                value={search}
+                onChange={setSearch}
+                placeholder="Search APIs by name or slug..."
+              />
+            </CardContent>
+          </Card>
 
       {/* APIs Grid */}
       {catalogLoading || analyticsLoading ? (
@@ -242,5 +244,7 @@ export default function ManageApisPage() {
         </div>
       )}
     </div>
+      </PageTransition>
+    </ErrorBoundary>
   );
 }
