@@ -11,7 +11,7 @@ router.use(validateApiKey);
 router.use(dynamicRateLimiter);
 
 // Route requests to specific APIs - using wildcard to capture all paths
-router.all('/:apiName/*', gatewayController.routeApiRequest);
+router.all('/:apiName/*path', gatewayController.routeApiRequest);
 
 // Fallback for requests without paths after apiName
 router.all('/:apiName', gatewayController.routeApiRequest);
