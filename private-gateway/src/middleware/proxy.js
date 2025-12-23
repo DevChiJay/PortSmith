@@ -16,11 +16,14 @@ const createApiProxy = (apiConfig) => {
     ws: true,
     // Preserve original request bodies (important for POST requests)
     bodyParser: false,
+    // Add timeouts
+    timeout: 30000, // 30 second timeout
+    proxyTimeout: 30000,
     pathRewrite: (path, req) => {
       // Remove the API prefix from the path
       // e.g., /gateway/github/users -> /users
-      const apiPath = req.originalUrl.replace(new RegExp(`^/gateway/${req.params.apiName}`), '');
-      return apiPath;
+      const pathAfterApiName = req.params[0] || '';
+      return '/' + pathAfterApiName;
     },
     onProxyReq: (proxyReq, req, res) => {
       // Start timer for response time measurement
@@ -62,7 +65,8 @@ const createApiProxy = (apiConfig) => {
             responseStatus: proxyRes.statusCode,
             responseTime,
             ipAddress: req.ip,
-            userAgent: req.headers['user-agent']
+            userAgent: req.headers['user-agent'],
+            gatewayType: req.gatewayType || 'private'
           });
           
           await usageLog.save();

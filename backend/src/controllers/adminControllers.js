@@ -5,6 +5,7 @@ const UsageLog = require('../models/UsageLog');
 const metricsService = require('../services/metricsService');
 const logger = require('../utils/logger');
 const mongoose = require('mongoose');
+const apiConfigService = require('../config/apis');
 
 /**
  * Get admin dashboard overview analytics
@@ -658,6 +659,9 @@ exports.createApi = async (req, res) => {
         isActive: newApi.isActive
       }
     });
+    
+    // Invalidate cache so gateways pick up the new API
+    apiConfigService.clearCache();
   } catch (error) {
     logger.error('Error creating API:', error);
     res.status(500).json({
@@ -722,6 +726,9 @@ exports.updateApi = async (req, res) => {
         isActive: api.isActive
       }
     });
+    
+    // Invalidate cache so gateways pick up changes
+    apiConfigService.clearCache();
   } catch (error) {
     logger.error(`Error updating API ${req.params.id}:`, error);
     res.status(500).json({
@@ -763,6 +770,9 @@ exports.deleteApi = async (req, res) => {
 
     // Delete the API
     await ApiCatalog.findByIdAndDelete(id);
+    
+    // Invalidate cache so gateways stop serving this API
+    apiConfigService.clearCache();
 
     logger.info(`Admin ${req.user.id} deleted API: ${api.name} (${api.slug})`);
 

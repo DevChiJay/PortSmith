@@ -41,6 +41,11 @@ const UsageLogSchema = new mongoose.Schema({
   userAgent: {
     type: String
   },
+  gatewayType: {
+    type: String,
+    enum: ['public', 'private'],
+    index: true
+  },
   timestamp: {
     type: Date,
     default: Date.now,

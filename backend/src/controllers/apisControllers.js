@@ -1,5 +1,6 @@
 const ApiCatalog = require('../models/ApiCatalog');
 const logger = require('../utils/logger');
+const apiConfigService = require('../config/apis');
 
 // Get all available APIs
 exports.getAllApis = async (req, res) => {
@@ -163,6 +164,9 @@ exports.addApi = async (req, res) => {
     
     await newApi.save();
     
+    // Invalidate cache so gateways pick up the new API
+    apiConfigService.clearCache();
+    
     logger.info(`User ${userId} created new API: ${name}`);
     
     res.status(201).json({
@@ -224,6 +228,9 @@ exports.updateApi = async (req, res) => {
     
     await api.save();
     
+    // Invalidate cache so gateways pick up changes
+    apiConfigService.clearCache();
+    
     logger.info(`User ${userId} updated API ${apiId}`);
     
     res.json({
@@ -261,6 +268,9 @@ exports.deleteApi = async (req, res) => {
     // Instead of hard deleting, set isActive to false
     api.isActive = false;
     await api.save();
+    
+    // Invalidate cache so gateways stop serving this API
+    apiConfigService.clearCache();
     
     logger.info(`User ${userId} deactivated API ${apiId}`);
     
