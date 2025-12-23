@@ -3,17 +3,14 @@
 import { useUser } from '@/hooks/use-user';
 import { useDashboardMetrics, useDashboardTimeline } from '@/hooks';
 import { useApiData } from '@/hooks/use-api-data';
-import { Activity, Key, TrendingUp, CheckCircle2, Plus, BookOpen, Search } from 'lucide-react';
-import Link from 'next/link';
+import { Activity, Key, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { staggerContainer } from '@/utils/animations';
 
-import { Button } from '@/components/ui/button';
 import {
   DashboardLayout,
   DashboardHeader,
-  DashboardGrid,
   DashboardSection,
   AnimatedMetricCard,
   LineChart,
@@ -23,8 +20,9 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ErrorState } from '@/components/ErrorState';
 import { PageTransition } from '@/components/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { RecentKeys } from '@/components/Dashboard/RecentKeys';
+import { QuickActions } from '@/components/Dashboard/QuickActions';
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -58,7 +56,7 @@ export default function Dashboard() {
           onRetry={() => refresh()}
         />
       ) : metricsLoading ? (
-        <DashboardGrid cols={4}>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-2">
@@ -70,7 +68,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           ))}
-        </DashboardGrid>
+        </div>
       ) : (
         <motion.div 
           className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
@@ -105,83 +103,12 @@ export default function Dashboard() {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Recent API Keys */}
         <DashboardSection title="Recent API Keys" description="Your most recently created keys">
-          <Card>
-            <CardContent className="pt-6">
-              {keysLoading ? (
-                <div className="space-y-3">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-24" />
-                      </div>
-                      <Skeleton className="h-6 w-16" />
-                    </div>
-                  ))}
-                </div>
-              ) : keysData?.keys && keysData.keys.length > 0 ? (
-                <div className="space-y-4">
-                  {keysData.keys.slice(0, 5).map((key: any) => (
-                    <div key={key.id} className="flex items-center justify-between border-b last:border-0 pb-3 last:pb-0">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">{key.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {key.apiName} • Created {format(new Date(key.createdAt), 'MMM d')}
-                        </p>
-                      </div>
-                      <Badge variant={key.status === 'active' ? 'default' : 'secondary'}>
-                        {key.status}
-                      </Badge>
-                    </div>
-                  ))}
-                  <Link href="/dashboard/my-keys">
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      View All Keys
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Key className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <p className="text-sm text-muted-foreground mb-4">No API keys yet</p>
-                  <Link href="/dashboard/my-keys">
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Your First Key
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <RecentKeys keys={keysData?.keys} isLoading={keysLoading} />
         </DashboardSection>
 
         {/* Quick Actions */}
         <DashboardSection title="Quick Actions" description="Common tasks and shortcuts">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                <Link href="/dashboard/my-keys" className="block">
-                  <Button variant="outline" className="w-full justify-start" size="lg">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create New API Key
-                  </Button>
-                </Link>
-                <Link href="/dashboard/available-apis" className="block">
-                  <Button variant="outline" className="w-full justify-start" size="lg">
-                    <Search className="h-4 w-4 mr-2" />
-                    Browse Available APIs
-                  </Button>
-                </Link>
-                <Link href="/dashboard/docs" className="block">
-                  <Button variant="outline" className="w-full justify-start" size="lg">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    View Documentation
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <QuickActions />
         </DashboardSection>
       </div>
 

@@ -37,7 +37,6 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [keyName, setKeyName] = useState('');
   const [selectedApiId, setSelectedApiId] = useState(preSelectedApiId || '');
-  const [scope, setScope] = useState('read');
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -61,7 +60,7 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
       const response = await axiosInstance.post('/api/keys', {
         name: keyName,
         apiId: selectedApiId,
-        permissions: scope === 'read_write' ? ['read', 'write'] : [scope],
+        permissions: ['read'],
       });
 
       // Backend returns the key data directly (not wrapped in success object)
@@ -80,7 +79,6 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
   const handleClose = () => {
     setKeyName('');
     setSelectedApiId(preSelectedApiId || '');
-    setScope('read');
     setCreatedKey(null);
     setCopied(false);
     onOpenChange(false);
@@ -145,21 +143,6 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
                     </SelectContent>
                   </Select>
                 )}
-              </div>
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="scope">
-                  Permissions <span className="text-red-500">*</span>
-                </Label>
-                <Select value={scope} onValueChange={setScope} required disabled={isSubmitting}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select permissions" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="read">Read Only</SelectItem>
-                    <SelectItem value="write">Write Only</SelectItem>
-                    <SelectItem value="read_write">Read & Write</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             <DialogFooter>

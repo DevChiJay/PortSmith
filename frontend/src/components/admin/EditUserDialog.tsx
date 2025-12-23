@@ -38,10 +38,14 @@ interface EditUserDialogProps {
   user: User;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function EditUserDialog({ user, onSuccess, trigger }: EditUserDialogProps) {
-  const [open, setOpen] = useState(false);
+export function EditUserDialog({ user, onSuccess, trigger, open: controlledOpen, onOpenChange: controlledOnOpenChange }: EditUserDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange || setInternalOpen;
   const [isLoading, setIsLoading] = useState(false);
   const { request } = useApiClient();
   const { toast } = useToast();
@@ -94,14 +98,16 @@ export function EditUserDialog({ user, onSuccess, trigger }: EditUserDialogProps
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm">
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-        )}
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>

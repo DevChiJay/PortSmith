@@ -23,6 +23,8 @@ interface DeleteUserDialogProps {
   userEmail: string;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function DeleteUserDialog({
@@ -30,8 +32,12 @@ export function DeleteUserDialog({
   userEmail,
   onSuccess,
   trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: DeleteUserDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange || setInternalOpen;
   const [isLoading, setIsLoading] = useState(false);
   const { request } = useApiClient();
   const { toast } = useToast();
@@ -64,14 +70,16 @@ export function DeleteUserDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </Button>
-        )}
-      </AlertDialogTrigger>
+      {controlledOpen === undefined && (
+        <AlertDialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
+          )}
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete User</AlertDialogTitle>

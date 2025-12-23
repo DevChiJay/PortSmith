@@ -32,6 +32,8 @@ interface EditKeyDialogProps {
   currentStatus: string;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function EditKeyDialog({
@@ -41,8 +43,12 @@ export function EditKeyDialog({
   currentStatus,
   onSuccess,
   trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: EditKeyDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange || setInternalOpen;
   const [isLoading, setIsLoading] = useState(false);
   const { request } = useApiClient();
   const { toast } = useToast();
@@ -107,14 +113,16 @@ export function EditKeyDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm">
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-        )}
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>

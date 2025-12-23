@@ -2,75 +2,50 @@
 
 import { useState } from 'react';
 import { useApiKeys } from '@/hooks/use-api-keys';
-import { Search, Filter, Key, Check, X, Clock, AlertCircle, MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-
+import { Key, Check, X, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { EditKeyDialog } from '@/components/admin/EditKeyExpiryDialog';
 import { DeleteKeyDialog } from '@/components/admin/DeleteKeyDialog';
+import { SearchFilters } from '@/components/admin/SearchFilters';
+import { ApiKeysTableRow } from '@/components/admin/ApiKeysTableRow';
+import type { ApiKey } from '@/app/admin/types';
 
 export default function AdminApiKeysPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const limit = 50;
 
   const { keys, pagination, isLoading, error, mutate } = useApiKeys(
     page,
     limit,
     search,
-    statusFilter
+    statusFilter === 'all' ? '' : statusFilter
   );
 
-  const { toast } = useToast();
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const handleEditKey = (key: ApiKey) => {
+    setSelectedKey(key);
+    setShowEditDialog(true);
   };
 
-  const maskKey = (key: string) => {
-    if (key.length <= 8) return key;
-    return `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
+  const handleDeleteKey = (key: ApiKey) => {
+    setSelectedKey(key);
+    setShowDeleteDialog(true);
   };
+
+  const statusFilterOptions = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' },
+    { value: 'revoked', label: 'Revoked' },
+  ];
 
   if (error) {
     return (
@@ -85,17 +60,13 @@ export default function AdminApiKeysPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">API Keys</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage all API keys across the platform
-          </p>
+          <p className="text-muted-foreground mt-1">Manage all API keys across the platform</p>
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -103,9 +74,7 @@ export default function AdminApiKeysPage() {
             <Key className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {pagination?.totalKeys || 0}
-            </div>
+            <div className="text-2xl font-bold">{pagination?.totalKeys || 0}</div>
           </CardContent>
         </Card>
         <Card>
@@ -143,39 +112,25 @@ export default function AdminApiKeysPage() {
         </Card>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by key name, user, or API..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <Select
-              value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="revoked">Revoked</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <SearchFilters
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by key name, user, or API..."
+            filters={[
+              {
+                key: 'status',
+                label: 'Status',
+                value: statusFilter,
+                options: statusFilterOptions,
+                onChange: setStatusFilter,
+              },
+            ]}
+          />
         </CardContent>
       </Card>
 
-      {/* API Keys Table */}
       <Card>
         <CardContent className="p-0">
           {isLoading ? (
@@ -191,9 +146,7 @@ export default function AdminApiKeysPage() {
               ))}
             </div>
           ) : keys.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              No API keys found
-            </div>
+            <div className="py-12 text-center text-muted-foreground">No API keys found</div>
           ) : (
             <>
               <Table>
@@ -212,136 +165,16 @@ export default function AdminApiKeysPage() {
                 </TableHeader>
                 <TableBody>
                   {keys.map((key) => (
-                    <TableRow key={key.id}>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">{key.name}</span>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="text-xs text-muted-foreground font-mono cursor-help">
-                                  {maskKey(key.key)}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="font-mono text-xs">{key.key}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {key.user ? (
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={key.user.avatarUrl} alt={key.user.name} />
-                              <AvatarFallback className="text-xs">
-                                {getInitials(key.user.name)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col">
-                              <span className="text-sm">{key.user.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {key.user.email}
-                              </span>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {key.api ? (
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium">{key.api.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              /{key.api.slug}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            key.status === 'active'
-                              ? 'default'
-                              : key.status === 'inactive'
-                              ? 'secondary'
-                              : 'destructive'
-                          }
-                        >
-                          {key.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">{key.requestCount.toLocaleString()}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {format(new Date(key.createdAt), 'MMM d, yyyy')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {key.lastUsed ? (
-                          <span className="text-sm text-muted-foreground">
-                            {format(new Date(key.lastUsed), 'MMM d, yyyy')}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Never</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {format(new Date(key.expiresAt), 'MMM d, yyyy')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <EditKeyDialog
-                              keyId={key.id}
-                              keyName={key.name}
-                              currentExpiry={key.expiresAt}
-                              currentStatus={key.status}
-                              onSuccess={mutate}
-                              trigger={
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                  <Pencil className="h-4 w-4 mr-2" />
-                                  Edit Key
-                                </DropdownMenuItem>
-                              }
-                            />
-                            <DeleteKeyDialog
-                              keyId={key.id}
-                              keyName={key.name}
-                              userName={key.user?.name}
-                              onSuccess={mutate}
-                              trigger={
-                                <DropdownMenuItem
-                                  onSelect={(e) => e.preventDefault()}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete Key
-                                </DropdownMenuItem>
-                              }
-                            />
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                    <ApiKeysTableRow
+                      key={key.id}
+                      apiKey={key}
+                      onEdit={handleEditKey}
+                      onDelete={handleDeleteKey}
+                    />
                   ))}
                 </TableBody>
               </Table>
 
-              {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 p-4 border-t">
                   <Button
@@ -358,9 +191,7 @@ export default function AdminApiKeysPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      setPage((p) => Math.min(pagination.totalPages, p + 1))
-                    }
+                    onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                     disabled={page === pagination.totalPages}
                   >
                     Next
@@ -371,6 +202,28 @@ export default function AdminApiKeysPage() {
           )}
         </CardContent>
       </Card>
+
+      {selectedKey && (
+        <>
+          <EditKeyDialog
+            keyId={selectedKey.id}
+            keyName={selectedKey.name}
+            currentExpiry={selectedKey.expiresAt}
+            currentStatus={selectedKey.status}
+            onSuccess={mutate}
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+          />
+          <DeleteKeyDialog
+            keyId={selectedKey.id}
+            keyName={selectedKey.name}
+            userName={selectedKey.user?.name}
+            onSuccess={mutate}
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+          />
+        </>
+      )}
     </div>
   );
 }

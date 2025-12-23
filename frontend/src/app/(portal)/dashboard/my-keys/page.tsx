@@ -3,8 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useApiData } from '@/hooks/use-api-data';
 import { useUser } from '@/hooks/use-user';
-import { Plus, Download, Filter, Key, Copy, Eye, Calendar, TrendingUp, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Download, Key } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -13,59 +12,20 @@ import {
   DashboardSection,
 } from '@/components/Dashboard';
 import { Button } from '@/components/ui/button';
-import { SearchBar } from '@/components/SearchBar';
-import { FilterChips } from '@/components/FilterChips';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ErrorState } from '@/components/ErrorState';
 import { PageTransition } from '@/components/PageTransition';
 import { exportApiKeys } from '@/utils/export';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 import { CreateKeyDialog } from '@/components/Dashboard/CreateKeyDialog';
 import { RevokeKeyDialog } from '@/components/Dashboard/RevokeKeyDialog';
-
-interface ApiKey {
-  id: string;
-  name: string;
-  key?: string;
-  apiId: string;
-  apiName: string;
-  status: 'active' | 'inactive' | 'revoked';
-  permissions: string[];
-  rateLimit?: {
-    requests: number;
-    per: number;
-  };
-  expiresAt?: string;
-  createdAt: string;
-  lastUsed?: string;
-  usage?: {
-    totalRequests: number;
-    last7Days: number;
-    last30Days: number;
-    successRate: number;
-    avgResponseTime: number;
-    trend: Array<{ date: string; requests: number }>;
-  };
-}
+import { KeyCard } from '@/components/Dashboard/KeyCard';
+import { KeyDetailsModal } from '@/components/Dashboard/KeyDetailsModal';
+import { KeyFilters } from '@/components/Dashboard/KeyFilters';
+import { EmptyState } from '@/components/Dashboard/EmptyState';
+import { Pagination } from '@/components/Dashboard/Pagination';
+import type { ApiKey, ActiveFilter, ApiInfo } from '../types';
 
 export default function MyApiKeysPage() {
   const { user } = useUser();
@@ -98,11 +58,11 @@ export default function MyApiKeysPage() {
   });
 
   const apiKeys = data?.keys || [];
-  const availableApis = apisData?.apis || [];
+  const availableApis = (apisData?.apis || []) as ApiInfo[];
 
   // Build active filters for FilterChips
-  const activeFilters = useMemo(() => {
-    const filters = [];
+  const activeFilters: ActiveFilter[] = useMemo(() => {
+    const filters: ActiveFilter[] = [];
     if (statusFilter && statusFilter !== 'all') {
       filters.push({ key: 'status', label: 'Status', value: statusFilter });
     }
@@ -155,17 +115,8 @@ export default function MyApiKeysPage() {
     setShowDetails(true);
   };
 
-  const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' => {
-    switch (status) {
-      case 'active':
-        return 'default';
-      case 'revoked':
-        return 'destructive';
-      case 'inactive':
-        return 'secondary';
-      default:
-        return 'secondary';
-    }
+  const handleRevoke = (key: ApiKey) => {
+    setRevokeKey(key);
   };
 
   if (error) {
@@ -206,47 +157,18 @@ export default function MyApiKeysPage() {
       {/* Filters Section */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <SearchBar
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  placeholder="Search by key name or API..."
-                />
-              </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[150px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="revoked">Revoked</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={apiFilter} onValueChange={setApiFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Filter by API" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All APIs</SelectItem>
-                  {availableApis.map((api) => (
-                    <SelectItem key={api.id || api._id} value={api.id || api._id}>
-                      {api.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <FilterChips
-              filters={activeFilters}
-              onRemove={removeFilter}
-              onClearAll={clearAllFilters}
-            />
-          </div>
+          <KeyFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            apiFilter={apiFilter}
+            onApiChange={setApiFilter}
+            availableApis={availableApis}
+            activeFilters={activeFilters}
+            onRemoveFilter={removeFilter}
+            onClearAll={clearAllFilters}
+          />
         </CardContent>
       </Card>
 
@@ -270,270 +192,44 @@ export default function MyApiKeysPage() {
             ))}
           </div>
         ) : paginatedKeys.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Key className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                {searchQuery || statusFilter !== 'all' || apiFilter !== 'all'
-                  ? 'No keys found'
-                  : 'No API keys yet'}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
-                {searchQuery || statusFilter !== 'all' || apiFilter !== 'all'
-                  ? 'Try adjusting your filters or search query'
-                  : 'Create your first API key to start using our services'}
-              </p>
-              {!searchQuery && statusFilter === 'all' && apiFilter === 'all' && (
-                <Button onClick={() => setCreateDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Your First Key
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Key}
+            title={searchQuery || statusFilter !== 'all' || apiFilter !== 'all' ? 'No keys found' : 'No API keys yet'}
+            description={searchQuery || statusFilter !== 'all' || apiFilter !== 'all'
+              ? 'Try adjusting your filters or search query'
+              : 'Create your first API key to start using our services'}
+            actionLabel={!searchQuery && statusFilter === 'all' && apiFilter === 'all' ? 'Create Your First Key' : undefined}
+            onAction={!searchQuery && statusFilter === 'all' && apiFilter === 'all' ? () => setCreateDialogOpen(true) : undefined}
+          />
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {paginatedKeys.map((key) => (
-                <Card key={key.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg truncate">{key.name}</CardTitle>
-                        <CardDescription className="mt-1">
-                          {key.apiName || 'Unknown API'}
-                        </CardDescription>
-                      </div>
-                      <Badge variant={getStatusVariant(key.status)} className="ml-2">
-                        {key.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Usage Stats */}
-                    {key.usage && (
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <p className="text-muted-foreground text-xs">Total Requests</p>
-                          <p className="font-semibold">{key.usage.totalRequests || 0}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-xs">Success Rate</p>
-                          <p className="font-semibold">{key.usage.successRate || 0}%</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Dates */}
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-3 w-3" />
-                        <span>Created {format(new Date(key.createdAt), 'MMM d, yyyy')}</span>
-                      </div>
-                      {key.lastUsed && (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-3 w-3" />
-                          <span>Last used {format(new Date(key.lastUsed), 'MMM d, yyyy')}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2 border-t">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => handleViewDetails(key)}
-                      >
-                        <Eye className="h-3 w-3 mr-1" />
-                        Details
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleCopyKey(key.key || '', key.name)}
-                        disabled={key.status !== 'active' || !key.key}
-                        title={!key.key ? 'Key value not available for security' : 'Copy API key'}
-                      >
-                        <Copy className="h-3 w-3 mr-1" />
-                        Copy
-                      </Button>
-                      {key.status === 'active' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setRevokeKey(key)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <KeyCard
+                  key={key.id}
+                  apiKey={key}
+                  onViewDetails={handleViewDetails}
+                  onCopyKey={handleCopyKey}
+                  onRevoke={handleRevoke}
+                />
               ))}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           </>
         )}
       </DashboardSection>
 
       {/* Key Details Modal */}
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{selectedKey?.name}</DialogTitle>
-            <DialogDescription>
-              Detailed information and usage statistics
-            </DialogDescription>
-          </DialogHeader>
-          {selectedKey && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium mb-1">API</p>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedKey.apiName || 'Unknown'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium mb-1">Status</p>
-                  <Badge variant={getStatusVariant(selectedKey.status)}>
-                    {selectedKey.status}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm font-medium mb-1">Created</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(selectedKey.createdAt), 'PPP')}
-                  </p>
-                </div>
-                {selectedKey.expiresAt && (
-                  <div>
-                    <p className="text-sm font-medium mb-1">Expires</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(selectedKey.expiresAt), 'PPP')}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <p className="text-sm font-medium mb-2">Permissions</p>
-                <div className="flex gap-2">
-                  {selectedKey.permissions?.map((permission) => (
-                    <Badge key={permission} variant="secondary">
-                      {permission}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {selectedKey.key && (
-                <div>
-                  <p className="text-sm font-medium mb-2">API Key</p>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={selectedKey.key}
-                      readOnly
-                      type="password"
-                      className="font-mono text-xs"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleCopyKey(selectedKey.key || '', selectedKey.name)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {selectedKey.usage && (
-                <div>
-                  <p className="text-sm font-medium mb-2">Usage Statistics</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardDescription>Total Requests</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-2xl font-bold">
-                          {selectedKey.usage.totalRequests || 0}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardDescription>Success Rate</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-2xl font-bold">
-                          {selectedKey.usage.successRate || 0}%
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardDescription>Last 7 Days</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-2xl font-bold">
-                          {selectedKey.usage.last7Days || 0}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardDescription>Avg Response Time</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-2xl font-bold">
-                          {selectedKey.usage.avgResponseTime || 0}ms
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              )}
-
-              {selectedKey.lastUsed && (
-                <div>
-                  <p className="text-sm font-medium mb-1">Last Used</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(selectedKey.lastUsed), 'PPP')}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <KeyDetailsModal
+        apiKey={selectedKey}
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        onCopyKey={handleCopyKey}
+      />
 
       {/* Create Key Dialog */}
       {createDialogOpen && (
