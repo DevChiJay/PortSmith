@@ -1,0 +1,132 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Weather API",
+    "description": "Complete weather data and forecasting service",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Weather API Support",
+      "email": "support@weather-api.example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://weather-api.example.com/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/current": {
+      "get": {
+        "summary": "Get current weather",
+        "description": "Returns current weather data for a location",
+        "operationId": "getCurrentWeather",
+        "tags": ["Weather"],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Latitude",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "description": "Longitude",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/forecast": {
+      "get": {
+        "summary": "Get weather forecast",
+        "description": "Returns 7-day weather forecast",
+        "operationId": "getWeatherForecast",
+        "tags": ["Weather"],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Latitude",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "description": "Longitude",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastData"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WeatherData": {
+        "type": "object",
+        "properties": {
+          "temperature": {
+            "type": "number",
+            "description": "Temperature in Celsius"
+          },
+          "humidity": {
+            "type": "number",
+            "description": "Humidity percentage"
+          },
+          "description": {
+            "type": "string",
+            "description": "Weather description"
+          }
+        }
+      },
+      "ForecastData": {
+        "type": "object",
+        "properties": {
+          "daily": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeatherData"
+            }
+          }
+        }
+      }
+    }
+  }
+}

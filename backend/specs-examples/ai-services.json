@@ -1,0 +1,229 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "AI Services Suite",
+    "description": "Comprehensive AI and machine learning services",
+    "version": "2.0.0",
+    "contact": {
+      "name": "AI Services Team",
+      "email": "ai@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://ai.example.com/api",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/text/analyze": {
+      "post": {
+        "summary": "Analyze text",
+        "description": "Perform text analysis including sentiment, entities, and keywords",
+        "operationId": "analyzeText",
+        "tags": ["text", "nlp"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextAnalysisResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/text/sentiment": {
+      "post": {
+        "summary": "Analyze sentiment",
+        "description": "Determine sentiment of text",
+        "operationId": "analyzeSentiment",
+        "tags": ["text", "sentiment"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sentiment results"
+          }
+        }
+      }
+    },
+    "/image/classify": {
+      "post": {
+        "summary": "Classify image",
+        "description": "Classify objects in an image",
+        "operationId": "classifyImage",
+        "tags": ["image", "vision"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Classification results"
+          }
+        }
+      }
+    },
+    "/image/detect": {
+      "post": {
+        "summary": "Detect objects",
+        "description": "Detect objects in an image",
+        "operationId": "detectObjects",
+        "tags": ["image", "vision"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Detection results"
+          }
+        }
+      }
+    },
+    "/voice/transcribe": {
+      "post": {
+        "summary": "Transcribe audio",
+        "description": "Convert speech to text",
+        "operationId": "transcribeAudio",
+        "tags": ["voice", "audio", "speech"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "audio": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transcription results"
+          }
+        }
+      }
+    },
+    "/voice/recognize": {
+      "post": {
+        "summary": "Recognize speaker",
+        "description": "Identify speaker from voice sample",
+        "operationId": "recognizeSpeaker",
+        "tags": ["voice", "audio"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "audio": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recognition results"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TextInput": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to analyze"
+          },
+          "language": {
+            "type": "string",
+            "description": "Language code (e.g., 'en', 'es')",
+            "default": "en"
+          }
+        }
+      },
+      "TextAnalysisResult": {
+        "type": "object",
+        "properties": {
+          "sentiment": {
+            "type": "string",
+            "enum": ["positive", "negative", "neutral"]
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

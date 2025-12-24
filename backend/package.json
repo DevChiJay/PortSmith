@@ -9,7 +9,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "api-sources": "node src/scripts/apiSourcesCli.js",
+    "spec-sync": "node src/scripts/specSyncCli.js",
+    "spec-sync:all": "node src/scripts/specSyncCli.js sync-all",
+    "spec-sync:live": "node src/scripts/specSyncCli.js sync-all live",
+    "spec-sync:fallback": "node src/scripts/specSyncCli.js sync-all fallback"
   },
   "keywords": [
     "api",
