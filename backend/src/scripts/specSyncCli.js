@@ -16,6 +16,7 @@
  */
 
 require('dotenv').config();
+const connectDB = require('../config/db');
 const specSyncService = require('../services/specSyncService');
 const specFetcherService = require('../services/specFetcherService');
 const specSubsetService = require('../services/specSubsetService');
@@ -362,6 +363,9 @@ Examples:
 // Command router
 (async () => {
   try {
+    // Connect to MongoDB before running commands
+    await connectDB();
+    
     switch (command) {
       case 'fetch':
         await fetchSource(arg1);
@@ -396,6 +400,9 @@ Examples:
         showHelp();
         break;
     }
+    
+    // Exit successfully
+    process.exit(0);
   } catch (error) {
     console.error('\n❌ Unexpected error:', error.message);
     console.error(error.stack);

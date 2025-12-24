@@ -1,6 +1,7 @@
 const ApiCatalog = require('../models/ApiCatalog');
 const logger = require('../utils/logger');
 const apiConfigService = require('../config/apis');
+const apiCatalogPersistenceService = require('../services/apiCatalogPersistenceService');
 
 // Get all available APIs
 exports.getAllApis = async (req, res) => {
@@ -285,3 +286,125 @@ exports.deleteApi = async (req, res) => {
     });
   }
 };
+
+// Get API documentation (OpenAPI spec or Markdown HTML)
+exports.getApiDocs = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    
+    const api = await apiCatalogPersistenceService.getApiCatalog(slug);
+    
+    if (!api) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: `API documentation not found for: ${slug}`
+      });
+    }
+
+    // Return appropriate documentation based on mode
+    if (api.mode === 'openapi' && api.specData) {
+      return res.json({
+        mode: 'openapi',
+        name: api.name,
+        description: api.description,
+        version: api.specData.info?.version || '1.0.0',
+        spec: api.specData,
+        endpoints: api.endpoints || [],
+        lastUpdated: api.externalSource?.lastSyncAt || api.updatedAt
+      });
+    } else if (api.mode === 'markdown' && api.htmlDoc) {
+      return res.json({
+        mode: 'markdown',
+        name: api.name,
+        description: api.description,
+        html: api.htmlDoc,
+        markdown: api.markdown,
+        lastUpdated: api.externalSource?.lastSyncAt || api.updatedAt
+      });
+    } else {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'API documentation not available'
+      });
+    }
+  } catch (error) {
+    logger.error(`Error fetching API docs for ${req.params.slug}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve API documentation'
+    });
+  }
+};
+
+// Get raw OpenAPI spec (download)
+exports.getRawSpec = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    
+    const api = await apiCatalogPersistenceService.getApiCatalog(slug);
+    
+    if (!api || api.mode !== 'openapi' || !api.specData) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: `OpenAPI spec not found for: ${slug}`
+      });
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${slug}-openapi.json"`);
+    res.json(api.specData);
+  } catch (error) {
+    logger.error(`Error fetching raw spec for ${req.params.slug}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve OpenAPI spec'
+    });
+  }
+};
+
+// Get API by slug (detailed info)
+exports.getApiBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    
+    const api = await apiCatalogPersistenceService.getApiCatalog(slug);
+    
+    if (!api) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: `API not found: ${slug}`
+      });
+    }
+
+    // Return public API information with documentation
+    res.json({
+      id: api._id,
+      name: api.name,
+      slug: api.slug,
+      description: api.description,
+      category: api.category,
+      icon: api.icon,
+      color: api.color,
+      visibility: api.visibility,
+      featured: api.featured,
+      mode: api.mode,
+      documentation: api.documentation,
+      baseUrl: api.baseUrl,
+      endpoints: api.endpoints || [],
+      pricing: api.pricing,
+      rateLimit: api.defaultRateLimit,
+      version: api.version,
+      // Include documentation content based on mode
+      specData: api.mode === 'openapi' ? api.specData : undefined,
+      htmlDoc: api.mode === 'markdown' ? api.htmlDoc : undefined,
+      lastUpdated: api.externalSource?.lastSyncAt || api.updatedAt
+    });
+  } catch (error) {
+    logger.error(`Error fetching API ${req.params.slug}:`, error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve API'
+    });
+  }
+};
+

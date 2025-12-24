@@ -8,8 +8,19 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ApiSkeleton } from "@/components/ApiDocs/ApiSkeleton";
-import { DocView } from "@/components/ApiDocs/View";
-import { ApiDocumentation } from "@/components/Docs/types";
+import { ApiDocsViewer } from "@/components/ApiDocs/ApiDocsViewer";
+
+interface ApiDocumentation {
+  slug: string;
+  name: string;
+  description: string;
+  version?: string;
+  mode: 'openapi' | 'markdown';
+  baseUrl?: string;
+  specData?: any;
+  htmlDoc?: string;
+  documentation?: string;
+}
 
 export default function ApiDocsDetailPage() {
   const params = useParams();
@@ -21,21 +32,33 @@ export default function ApiDocsDetailPage() {
   });
 
   const [specData, setSpecData] = useState<any>(null);
+  const [htmlDoc, setHtmlDoc] = useState<string>("");
 
   useEffect(() => {
-    if (apiDoc?.baseUrl && !apiDoc.specData) {
-      setSpecData({
-        openapi: "3.0.0",
-        info: {
-          title: apiDoc.name,
-          version: apiDoc.version || "1.0.0",
-          description: apiDoc.description,
-        },
-        servers: [{ url: apiDoc.baseUrl }],
-        paths: {},
-      });
-    } else if (apiDoc?.specData) {
-      setSpecData(apiDoc.specData);
+    if (!apiDoc) return;
+
+    // Handle OpenAPI mode
+    if (apiDoc.mode === 'openapi') {
+      if (apiDoc.specData) {
+        setSpecData(apiDoc.specData);
+      } else if (apiDoc.baseUrl) {
+        // Fallback: create minimal spec from baseUrl
+        setSpecData({
+          openapi: "3.0.0",
+          info: {
+            title: apiDoc.name,
+            version: apiDoc.version || "1.0.0",
+            description: apiDoc.description,
+          },
+          servers: [{ url: apiDoc.baseUrl }],
+          paths: {},
+        });
+      }
+    }
+
+    // Handle Markdown mode
+    if (apiDoc.mode === 'markdown' && apiDoc.htmlDoc) {
+      setHtmlDoc(apiDoc.htmlDoc);
     }
   }, [apiDoc]);
 
@@ -76,7 +99,11 @@ export default function ApiDocsDetailPage() {
         </div>
       </div>
 
-      <DocView apiDoc={apiDoc} specData={specData} />
+      <ApiDocsViewer 
+        api={apiDoc}
+        specData={specData}
+        htmlDoc={htmlDoc}
+      />
     </div>
   );
 }

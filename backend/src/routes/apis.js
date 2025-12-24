@@ -9,8 +9,14 @@ router.get('/', apisController.getAllApis);
 // Get featured APIs (limited to first 6)
 router.get('/featured', apisController.getFeaturedApis);
 
-// Get a specific API by ID or slug
-router.get('/:idOrSlug', apisController.getApiByIdOrSlug);
+// Get API documentation (OpenAPI spec or Markdown HTML)
+router.get('/:slug/docs', apisController.getApiDocs);
+
+// Get raw OpenAPI spec (download)
+router.get('/:slug/spec', apisController.getRawSpec);
+
+// Get API by slug (detailed info)
+router.get('/:slug', apisController.getApiBySlug);
 
 // The following routes require authentication
 router.use(requireAuth);

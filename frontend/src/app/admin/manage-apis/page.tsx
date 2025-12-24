@@ -42,6 +42,16 @@ interface Api {
   description: string;
   baseUrl?: string;
   documentation?: string;
+  mode?: 'openapi' | 'markdown';
+  category?: string;
+  icon?: string;
+  color?: string;
+  featured?: boolean;
+  externalSource?: {
+    liveUrl?: string;
+    lastSyncAt?: string;
+    lastSyncStatus?: 'success' | 'failed' | 'pending';
+  };
 }
 
 interface ApisResponse {
@@ -100,7 +110,7 @@ export default function ManageApisPage() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Manage APIs</h1>
               <p className="text-muted-foreground mt-1">
-                Configure and monitor API endpoints
+                Configure internal/manual APIs. External APIs are auto-synced from config.
               </p>
             </div>
             <AddApiDialog onSuccess={refreshData} />
@@ -144,9 +154,16 @@ export default function ManageApisPage() {
             <Card key={api.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{api.name}</CardTitle>
-                    <CardDescription>/{api.slug}</CardDescription>
+                  <div className="flex items-center gap-2">
+                    {api.icon && (
+                      <span className="text-2xl" style={{ color: api.color }}>
+                        {api.icon}
+                      </span>
+                    )}
+                    <div>
+                      <CardTitle>{api.name}</CardTitle>
+                      <CardDescription>/{api.slug}</CardDescription>
+                    </div>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -182,9 +199,39 @@ export default function ManageApisPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                <Badge variant="default" className="w-fit">
-                  Active
-                </Badge>
+                <div className="flex gap-2 mt-2">
+                  {api.externalSource ? (
+                    <>
+                      <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+                        🌐 External
+                      </Badge>
+                      {api.externalSource.lastSyncStatus === 'success' && (
+                        <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
+                          ✓ Synced
+                        </Badge>
+                      )}
+                      {api.externalSource.lastSyncStatus === 'failed' && (
+                        <Badge variant="outline" className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800">
+                          ✗ Sync Failed
+                        </Badge>
+                      )}
+                    </>
+                  ) : (
+                    <Badge variant="outline" className="bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800">
+                      📝 Manual
+                    </Badge>
+                  )}
+                  {api.featured && (
+                    <Badge variant="outline" className="bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                      ⭐ Featured
+                    </Badge>
+                  )}
+                  {api.category && (
+                    <Badge variant="secondary">
+                      {api.category}
+                    </Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {api.analytics ? (

@@ -290,6 +290,17 @@ exports.getApisAnalytics = async (req, res) => {
           name: api.name,
           slug: api.slug,
           description: api.description,
+          mode: api.mode,
+          category: api.category,
+          icon: api.icon,
+          color: api.color,
+          featured: api.featured,
+          visibility: api.visibility,
+          externalSource: api.externalSource ? {
+            lastSyncAt: api.externalSource.lastSyncAt,
+            lastSyncStatus: api.externalSource.lastSyncStatus,
+            liveUrl: api.externalSource.liveUrl
+          } : null,
           activeKeys,
           totalKeys,
           totalRequests: stats.totalRequests,
@@ -609,7 +620,10 @@ exports.deleteUser = async (req, res) => {
  */
 exports.createApi = async (req, res) => {
   try {
-    const { name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit } = req.body;
+    const { 
+      name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit,
+      mode, category, icon, color, featured, pricing, visibility
+    } = req.body;
 
     // Validate required fields
     if (!name || !slug || !description || !baseUrl) {
@@ -628,7 +642,7 @@ exports.createApi = async (req, res) => {
       });
     }
 
-    // Create new API
+    // Create new API with defaults for new fields
     const newApi = new ApiCatalog({
       name,
       slug: slug.toLowerCase(),
@@ -641,6 +655,19 @@ exports.createApi = async (req, res) => {
         requests: 100,
         per: 60 * 60 * 1000
       },
+      // New fields with safe defaults
+      mode: mode || 'openapi',
+      category: category || 'General',
+      icon: icon || '🔌',
+      color: color || '#3B82F6',
+      featured: featured || false,
+      visibility: visibility || 'public',
+      pricing: pricing || {
+        free: { maxRequests: 1000, period: 'month' },
+        pro: { maxRequests: 100000, period: 'month', price: 0 }
+      },
+      // Manual APIs don't have externalSource
+      externalSource: null,
       isActive: true
     });
 
@@ -656,6 +683,13 @@ exports.createApi = async (req, res) => {
         slug: newApi.slug,
         description: newApi.description,
         baseUrl: newApi.baseUrl,
+        mode: newApi.mode,
+        category: newApi.category,
+        icon: newApi.icon,
+        color: newApi.color,
+        featured: newApi.featured,
+        visibility: newApi.visibility,
+        externalSource: newApi.externalSource,
         isActive: newApi.isActive
       }
     });
@@ -677,7 +711,10 @@ exports.createApi = async (req, res) => {
 exports.updateApi = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit, isActive } = req.body;
+    const { 
+      name, slug, description, baseUrl, documentation, endpoints, authType, defaultRateLimit, isActive,
+      mode, category, icon, color, featured, visibility
+    } = req.body;
 
     const api = await ApiCatalog.findById(id);
     if (!api) {
@@ -685,6 +722,11 @@ exports.updateApi = async (req, res) => {
         error: 'Not Found',
         message: 'API not found'
       });
+    }
+
+    // Warn if trying to edit external API
+    if (api.externalSource) {
+      logger.warn(`Admin ${req.user.id} attempting to edit external API: ${api.slug}`);
     }
 
     // If slug is being changed, check if new slug is available
@@ -709,6 +751,16 @@ exports.updateApi = async (req, res) => {
     if (defaultRateLimit) api.defaultRateLimit = defaultRateLimit;
     if (typeof isActive === 'boolean') api.isActive = isActive;
     
+    // Update new fields (only for manual APIs)
+    if (!api.externalSource) {
+      if (mode) api.mode = mode;
+      if (category) api.category = category;
+      if (icon !== undefined) api.icon = icon;
+      if (color) api.color = color;
+      if (typeof featured === 'boolean') api.featured = featured;
+      if (visibility) api.visibility = visibility;
+    }
+    
     api.updatedAt = Date.now();
 
     await api.save();
@@ -723,6 +775,13 @@ exports.updateApi = async (req, res) => {
         slug: api.slug,
         description: api.description,
         baseUrl: api.baseUrl,
+        mode: api.mode,
+        category: api.category,
+        icon: api.icon,
+        color: api.color,
+        featured: api.featured,
+        visibility: api.visibility,
+        externalSource: api.externalSource,
         isActive: api.isActive
       }
     });

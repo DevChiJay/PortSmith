@@ -36,6 +36,15 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
     baseUrl: '',
     documentation: '',
     visibility: 'public',
+    mode: 'openapi',
+    category: 'General',
+    icon: '🔌',
+    color: '#3B82F6',
+    featured: false,
+    pricing: {
+      tier: 'free',
+      monthlyRate: 0,
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +54,11 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
     try {
       await request('/api/admin/apis', {
         method: 'POST',
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          // Ensure externalSource is null for manual APIs
+          externalSource: null,
+        }),
       });
 
       toast({
@@ -61,6 +74,15 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
         baseUrl: '',
         documentation: '',
         visibility: 'public',
+        mode: 'openapi',
+        category: 'General',
+        icon: '🔌',
+        color: '#3B82F6',
+        featured: false,
+        pricing: {
+          tier: 'free',
+          monthlyRate: 0,
+        },
       });
       onSuccess?.();
     } catch (error: any) {
@@ -100,11 +122,16 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add New API</DialogTitle>
+            <DialogTitle>Add New API (Manual/Internal)</DialogTitle>
             <DialogDescription>
-              Create a new API endpoint in the catalog
+              Create a new internal API endpoint. For external FastAPI services, use the config file + sync CLI instead.
             </DialogDescription>
           </DialogHeader>
+          <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-3 mb-4">
+            <p className="text-xs text-blue-800 dark:text-blue-200">
+              💡 This form is for <strong>internal/manual APIs only</strong>. External APIs are auto-synced from <code>externalApiSources.js</code>.
+            </p>
+          </div>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">API Name *</Label>
@@ -168,6 +195,51 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
               />
             </div>
             <div className="grid gap-2">
+              <Label htmlFor="category">Category *</Label>
+              <select
+                id="category"
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, category: e.target.value }))
+                }
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                required
+              >
+                <option value="General">General</option>
+                <option value="Data & Analytics">Data & Analytics</option>
+                <option value="AI & ML">AI & ML</option>
+                <option value="Communication">Communication</option>
+                <option value="Financial">Financial</option>
+                <option value="Authentication">Authentication</option>
+                <option value="Utilities">Utilities</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="icon">Icon</Label>
+                <Input
+                  id="icon"
+                  value={formData.icon}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, icon: e.target.value }))
+                  }
+                  placeholder="🔌"
+                  maxLength={2}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="color">Color</Label>
+                <Input
+                  id="color"
+                  type="color"
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, color: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="visibility">Visibility *</Label>
               <select
                 id="visibility"
@@ -184,6 +256,20 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
               <p className="text-xs text-muted-foreground">
                 Public APIs are accessible via gateway.portsmith.dev, Private APIs via privatesmith.dev
               </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                id="featured"
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, featured: e.target.checked }))
+                }
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="featured" className="text-sm font-normal">
+                Featured API (show on homepage)
+              </Label>
             </div>
           </div>
           <DialogFooter>

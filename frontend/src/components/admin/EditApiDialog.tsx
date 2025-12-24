@@ -26,6 +26,12 @@ interface Api {
   description: string;
   baseUrl?: string;
   documentation?: string;
+  mode?: string;
+  category?: string;
+  icon?: string;
+  color?: string;
+  featured?: boolean;
+  externalSource?: any;
 }
 
 interface EditApiDialogProps {
@@ -47,7 +53,14 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
     baseUrl: api.baseUrl || '',
     documentation: api.documentation || '',
     visibility: (api as any).visibility || 'public',
+    mode: api.mode || 'openapi',
+    category: api.category || 'General',
+    icon: api.icon || '🔌',
+    color: api.color || '#3B82F6',
+    featured: api.featured || false,
   });
+
+  const isExternalApi = !!api.externalSource;
 
   useEffect(() => {
     if (open) {
@@ -58,6 +71,11 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
         baseUrl: api.baseUrl || '',
         documentation: api.documentation || '',
         visibility: (api as any).visibility || 'public',
+        mode: api.mode || 'openapi',
+        category: api.category || 'General',
+        icon: api.icon || '🔌',
+        color: api.color || '#3B82F6',
+        featured: api.featured || false,
       });
     }
   }, [open, api]);
@@ -103,8 +121,19 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit API</DialogTitle>
-            <DialogDescription>Update API details</DialogDescription>
+            <DialogDescription>
+              {isExternalApi 
+                ? '⚠️ This is an external API. Some fields are auto-synced and cannot be edited.'
+                : 'Update API details'}
+            </DialogDescription>
           </DialogHeader>
+          {isExternalApi && (
+            <div className="rounded-md bg-amber-50 dark:bg-amber-950 p-3 mb-4">
+              <p className="text-xs text-amber-800 dark:text-amber-200">
+                ⚠️ This API is managed by <code>externalApiSources.js</code>. Changes here may be overwritten on next sync.
+              </p>
+            </div>
+          )}
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="edit-name">API Name *</Label>
@@ -165,6 +194,54 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
               />
             </div>
             <div className="grid gap-2">
+              <Label htmlFor="edit-category">Category *</Label>
+              <select
+                id="edit-category"
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, category: e.target.value }))
+                }
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                required
+                disabled={isExternalApi}
+              >
+                <option value="General">General</option>
+                <option value="Data & Analytics">Data & Analytics</option>
+                <option value="AI & ML">AI & ML</option>
+                <option value="Communication">Communication</option>
+                <option value="Financial">Financial</option>
+                <option value="Authentication">Authentication</option>
+                <option value="Utilities">Utilities</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-icon">Icon</Label>
+                <Input
+                  id="edit-icon"
+                  value={formData.icon}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, icon: e.target.value }))
+                  }
+                  placeholder="🔌"
+                  maxLength={2}
+                  disabled={isExternalApi}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-color">Color</Label>
+                <Input
+                  id="edit-color"
+                  type="color"
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, color: e.target.value }))
+                  }
+                  disabled={isExternalApi}
+                />
+              </div>
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="edit-visibility">Visibility *</Label>
               <select
                 id="edit-visibility"
@@ -181,6 +258,21 @@ export function EditApiDialog({ api, onSuccess, trigger }: EditApiDialogProps) {
               <p className="text-xs text-muted-foreground">
                 Public APIs are accessible via gateway.portsmith.dev, Private APIs via privatesmith.dev
               </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                id="edit-featured"
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, featured: e.target.checked }))
+                }
+                className="h-4 w-4 rounded border-gray-300"
+                disabled={isExternalApi}
+              />
+              <Label htmlFor="edit-featured" className="text-sm font-normal">
+                Featured API (show on homepage)
+              </Label>
             </div>
           </div>
           <DialogFooter>
