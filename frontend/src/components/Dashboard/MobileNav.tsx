@@ -23,10 +23,12 @@ export function MobileNav() {
         </SheetTrigger>
 
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-xs font-bold text-primary-foreground">PS</span>
-          </div>
-          <span className="font-semibold">Portsmith</span>
+          <img 
+            src="/logo.svg" 
+            alt="PortSmith Logo" 
+            className="w-7 h-7"
+          />
+          <span className="font-semibold">PortSmith</span>
         </div>
 
         <MobileUserMenu />
@@ -34,10 +36,12 @@ export function MobileNav() {
 
       <SheetContent side="left" className="w-[240px] sm:w-[280px] p-0">
         <div className="px-2 py-4 flex items-center gap-2 border-b">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center ml-2">
-            <span className="text-xs font-bold text-primary-foreground">PS</span>
-          </div>
-          <span className="font-semibold">Portsmith</span>
+          <img 
+            src="/logo.svg" 
+            alt="PortSmith Logo" 
+            className="w-7 h-7 ml-2"
+          />
+          <span className="font-semibold">PortSmith</span>
         </div>
 
         <ScrollArea className="h-[calc(100vh-60px)]">

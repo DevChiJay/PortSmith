@@ -41,9 +41,11 @@ export default function ScrollNavbar() {
               <div className="flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 flex items-center justify-center text-white dark:text-gray-900 font-bold text-sm group-hover:scale-105 transition-transform">
-                    PS
-                  </div>
+                  <img 
+                    src="/logo.svg" 
+                    alt="PortSmith Logo" 
+                    className="h-8 w-8 group-hover:scale-105 transition-transform"
+                  />
                   <span className="font-bold text-lg tracking-tight">PortSmith</span>
                 </Link>
 

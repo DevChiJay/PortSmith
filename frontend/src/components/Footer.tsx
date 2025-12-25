@@ -9,16 +9,12 @@ function Footer() {
           {/* Logo and company info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
-                <Image
-                  src="/logo.png"
-                  alt="DevChi Logo"
-                  width={32}
-                  height={32}
-                  className="object-contain"
-                />
-              </div>
-              <span className="font-bold text-xl">DevChi</span>
+              <img 
+                src="/logo.svg" 
+                alt="PortSmith Logo" 
+                className="w-10 h-10"
+              />
+              <span className="font-bold text-xl">PortSmith</span>
             </div>
             <p className="text-muted-foreground">
               Powerful API management platform for developers and businesses.

@@ -60,9 +60,11 @@ export default function AdminSidebar() {
   const SidebarContent = (
     <>
       <div className="p-4 flex items-center gap-2 border-b">
-        <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-          <span className="text-sm font-bold text-primary-foreground">PS</span>
-        </div>
+        <img 
+          src="/logo.svg" 
+          alt="PortSmith Logo" 
+          className="w-8 h-8"
+        />
         <div className="flex flex-col">
           <span className="font-semibold text-lg">PortSmith</span>
           <span className="text-xs text-muted-foreground">Admin Panel</span>

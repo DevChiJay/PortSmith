@@ -1,0 +1,42 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Version 2B: Circuit Board API -->
+  <defs>
+    <linearGradient id="grad2b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#334155;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent2b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <circle cx="100" cy="100" r="90" fill="url(#grad2b)"/>
+  
+  <!-- Circuit Lines -->
+  <g stroke="url(#accent2b)" stroke-width="2.5" opacity="0.5">
+    <path d="M 40 100 L 70 100 L 70 70 L 100 70" fill="none"/>
+    <path d="M 160 100 L 130 100 L 130 70 L 100 70" fill="none"/>
+    <path d="M 100 40 L 100 70" fill="none"/>
+    <path d="M 100 160 L 100 130 L 70 130 L 70 100" fill="none"/>
+    <path d="M 130 130 L 130 100 L 160 100" fill="none"/>
+  </g>
+  
+  <!-- Central Processor -->
+  <rect x="80" y="80" width="40" height="40" rx="4" fill="white"/>
+  <rect x="84" y="84" width="32" height="32" rx="2" fill="url(#grad2b)"/>
+  <text x="100" y="107" font-family="Arial, sans-serif" font-size="16" font-weight="bold" 
+        fill="white" text-anchor="middle">PS</text>
+  
+  <!-- Connection Nodes -->
+  <circle cx="40" cy="100" r="8" fill="url(#accent2b)"/>
+  <circle cx="160" cy="100" r="8" fill="url(#accent2b)"/>
+  <circle cx="100" cy="40" r="8" fill="url(#accent2b)"/>
+  <circle cx="100" cy="160" r="8" fill="url(#accent2b)"/>
+  
+  <!-- Corner Mini Chips -->
+  <rect x="50" y="50" width="12" height="12" rx="2" fill="white" opacity="0.7"/>
+  <rect x="138" y="50" width="12" height="12" rx="2" fill="white" opacity="0.7"/>
+  <rect x="50" y="138" width="12" height="12" rx="2" fill="white" opacity="0.7"/>
+  <rect x="138" y="138" width="12" height="12" rx="2" fill="white" opacity="0.7"/>
+</svg>

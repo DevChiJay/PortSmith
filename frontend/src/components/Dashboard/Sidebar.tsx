@@ -23,10 +23,12 @@ export function Sidebar() {
     <aside className="hidden md:flex md:w-64 h-screen flex-col bg-background border-r shadow-sm">
       <Link href={'/'}>
       <div className="p-4 flex items-center gap-2 border-b">
-        <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-          <span className="text-sm font-bold text-primary-foreground">PS</span>
-        </div>
-        <span className="font-semibold text-lg">Portsmith</span>
+        <img 
+          src="/logo.svg" 
+          alt="PortSmith Logo" 
+          className="w-8 h-8"
+        />
+        <span className="font-semibold text-lg">PortSmith</span>
       </div>
       </Link>
       

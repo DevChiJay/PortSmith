@@ -1,0 +1,15 @@
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and private routes
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /profile/
+
+# Crawl delay (optional - be nice to servers)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://portsmith.dev/sitemap.xml
