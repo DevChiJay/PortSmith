@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ApiSkeleton } from "@/components/ApiDocs/ApiSkeleton";
 import { ApiDocsViewer } from "@/components/ApiDocs/ApiDocsViewer";
+import ScrollNavbar from "@/components/scroll-navbar";
 
 interface ApiDocumentation {
   slug: string;
@@ -64,47 +65,64 @@ export default function ApiDocsDetailPage() {
   }, [apiDoc]);
 
   if (isLoading) {
-    return <ApiSkeleton />;
+    return (
+      <>
+        <ScrollNavbar />
+        <div className="pt-20">
+          <ApiSkeleton />
+        </div>
+      </>
+    );
   }
 
   if (error || !apiDoc) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/docs">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back to Documentation
-            </Link>
-          </Button>
-        </div>
+      <>
+        <ScrollNavbar />
+        <div className="pt-20 px-4 container max-w-6xl">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/docs">
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Back to Documentation
+                </Link>
+              </Button>
+            </div>
 
-        <div className="bg-destructive/10 p-4 rounded-lg text-destructive max-w-md text-center">
-          <h2 className="text-lg font-semibold mb-2">Error Loading Documentation</h2>
-          <p>We couldn't load the documentation for this API. Please try again later.</p>
+            <div className="bg-destructive/10 p-4 rounded-lg text-destructive max-w-md text-center">
+              <h2 className="text-lg font-semibold mb-2">Error Loading Documentation</h2>
+              <p>We couldn't load the documentation for this API. Please try again later.</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/docs">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back to Documentation
-            </Link>
-          </Button>
+    <>
+      <ScrollNavbar />
+      <div className="pt-20 px-4 container max-w-6xl">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/docs">
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Back to Documentation
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <ApiDocsViewer 
+            api={apiDoc}
+            specData={specData}
+            htmlDoc={htmlDoc}
+          />
         </div>
       </div>
-
-      <ApiDocsViewer 
-        api={apiDoc}
-        specData={specData}
-        htmlDoc={htmlDoc}
-      />
-    </div>
+    </>
   );
 }

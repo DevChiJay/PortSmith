@@ -46,7 +46,7 @@ export default function DocsPage() {
         <meta property="og:title" content="API Documentation - PortSmith" />
         <meta property="og:description" content="Comprehensive API documentation for PortSmith Gateway." />
         <meta property="og:image" content="/logo.png" />
-        <meta property="og:url" content="https://portsmith.com/docs" />
+        <meta property="og:url" content="https://portsmith.dev/docs" />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
       

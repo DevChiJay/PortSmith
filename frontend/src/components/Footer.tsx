@@ -159,7 +159,7 @@ function Footer() {
 
         <div className="border-t mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground order-2 md:order-1">
-            © 2025 DevChi API Platform. All rights reserved.
+            © 2025 Devchi Digital. All rights reserved.
           </p>
           <div className="flex items-center gap-4 order-1 md:order-2">
             <Link

@@ -1278,3 +1278,38 @@
 .redoc-container ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary;
 }
+
+/* Swagger UI Authorization Modal - Force Dark Text */
+.swagger-ui .dialog-ux .modal-ux,
+.swagger-ui .dialog-ux .modal-ux-content,
+.swagger-ui .auth-container {
+  color: #333 !important;
+}
+
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content h6,
+.swagger-ui .auth-container h4,
+.swagger-ui .auth-container h6 {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+}
+
+.swagger-ui .auth-container p,
+.swagger-ui .auth-container label,
+.swagger-ui .auth-container code,
+.swagger-ui .auth-container .wrapper,
+.swagger-ui .auth-container section p,
+.swagger-ui .auth-container section label {
+  color: #333 !important;
+}
+
+.swagger-ui .auth-container input[type="text"],
+.swagger-ui .auth-container input[type="password"] {
+  color: #1a1a1a !important;
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+}
+
+.swagger-ui .auth-btn-wrapper button {
+  color: #333 !important;
+}

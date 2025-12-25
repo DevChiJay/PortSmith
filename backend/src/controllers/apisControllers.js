@@ -14,7 +14,8 @@ exports.getAllApis = async (req, res) => {
       name: api.name,
       slug: api.slug,
       description: api.description,
-      documentation: api.documentation
+      documentation: api.documentation,
+      featured: api.featured || false
     }));
     
     res.json({ apis: apiList });

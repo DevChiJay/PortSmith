@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           <div className="prose dark:prose-invert max-w-none">
             <h2>1. Introduction</h2>
             <p>
-              At DevChi API Platform, we take your privacy seriously. This Privacy Policy explains how we collect, 
+              At Portsmith, we take your privacy seriously. This Privacy Policy explains how we collect, 
               use, disclose, and safeguard your information when you use our platform and services.
             </p>
             
@@ -129,7 +129,7 @@ export default function PrivacyPage() {
       <footer className="border-t py-6 bg-background">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © 2025 DevChi API Platform. All rights reserved.
+            © 2025 Devchi Digital. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

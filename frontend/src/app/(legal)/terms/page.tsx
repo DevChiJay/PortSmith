@@ -28,13 +28,13 @@ export default function TermsPage() {
           <div className="prose dark:prose-invert max-w-none">
             <h2>1. Introduction</h2>
             <p>
-              Welcome to DevChi API Platform. By accessing or using our platform, website, and services, 
+              Welcome to Portsmith. By accessing or using our platform, website, and services, 
               you agree to be bound by these Terms of Service. Please read them carefully before using our services.
             </p>
             
             <h2>2. Definitions</h2>
             <p>
-              "Platform" refers to DevChi API Platform, accessible from our website and related applications.
+              "Platform" refers to Portsmith, accessible from our website and related applications.
               "Services" means the API services, documentation, and related tools we provide.
               "User", "you", and "your" refers to individuals or entities using our services.
             </p>
@@ -113,7 +113,7 @@ export default function TermsPage() {
       <footer className="border-t py-6 bg-background">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © 2025 DevChi API Platform. All rights reserved.
+            © 2025 Devchi Digital. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

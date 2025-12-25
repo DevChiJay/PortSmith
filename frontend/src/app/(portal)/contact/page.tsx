@@ -22,7 +22,7 @@ export default function ContactPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
-  const [sendTo, setSendTo] = useState('support@portsmith.com')
+  const [sendTo, setSendTo] = useState('support@portsmith.dev')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -233,7 +233,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold mb-1">Email Us</h3>
                     <p className="text-sm text-muted-foreground">
-                      support@portsmith.com
+                      support@portsmith.dev
                     </p>
                   </div>
                 </div>

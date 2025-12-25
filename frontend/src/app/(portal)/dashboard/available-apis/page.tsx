@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useApiData } from '@/hooks/use-api-data';
 import { useUser } from '@/hooks/use-user';
 import { Search } from 'lucide-react';
@@ -22,6 +23,7 @@ import { EmptyState } from '@/components/Dashboard/EmptyState';
 import type { ApiInfo, SortBy } from '../types';
 
 export default function AvailableApisPage() {
+  const router = useRouter();
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -91,8 +93,7 @@ export default function AvailableApisPage() {
   };
 
   const handleViewDocs = (api: ApiInfo) => {
-    setSelectedApi(api);
-    setShowDetails(true);
+    router.push(`/docs/${api.slug}`);
   };
 
   const handleCreateKey = (api: ApiInfo) => {

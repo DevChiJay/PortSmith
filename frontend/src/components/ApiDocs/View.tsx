@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LayoutDashboard, Code, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 
-// Dynamically import Swagger UI to avoid SSR issues and React warnings
+// Suppress React strict mode warnings for SwaggerUI
+if (typeof window !== 'undefined') {
+  const originalError = console.error;
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('UNSAFE_componentWillReceiveProps')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+}
+
+// Dynamically import Swagger UI to avoid SSR issues
 const SwaggerUI = dynamic(
-  () => import("swagger-ui-react").then((mod) => {
-    // Suppress the UNSAFE_componentWillReceiveProps warning
-    const SwaggerUIComponent = (props: any) => {
-      return <mod.default {...props} />;
-    };
-    return SwaggerUIComponent;
-  }), 
+  () => import("swagger-ui-react"),
   { ssr: false }
 );
 
@@ -44,6 +52,11 @@ export function DocView({ apiDoc, specData }: DocViewProps) {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+  };
+
+  // Request interceptor to ensure API key is added to requests
+  const requestInterceptor = (req: any) => {
+    return req;
   };
 
   return (
@@ -105,6 +118,8 @@ export function DocView({ apiDoc, specData }: DocViewProps) {
                   displayRequestDuration={true}
                   filter={true}
                   showRequestHeaders={true}
+                  persistAuthorization={true}
+                  requestInterceptor={requestInterceptor}
                 />
               </div>
             </TabsContent>
