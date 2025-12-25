@@ -65,7 +65,7 @@ export function MetricCard({
               className={cn(
                 'text-xs font-medium',
                 trend.isPositive
-                  ? 'text-green-600 dark:text-green-400'
+                  ? 'text-blue-500 dark:text-blue-400'
                   : 'text-red-600 dark:text-red-400'
               )}
             >

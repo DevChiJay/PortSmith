@@ -66,6 +66,125 @@ export default function DocsPage() {
             </p>
           </div>
 
+          {/* Getting Started Guide */}
+          <Card className="mb-12 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Book className="h-6 w-6 text-primary" />
+                Getting Started with API Keys
+              </CardTitle>
+              <CardDescription className="text-base">
+                Follow these simple steps to integrate our APIs into your applications
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {/* Introduction */}
+              <div className="prose dark:prose-invert max-w-none">
+                <p className="text-muted-foreground leading-relaxed">
+                  PortSmith provides a unified API gateway that simplifies access to multiple APIs through a single platform. 
+                  Each API requires an API key for authentication, which you can easily generate and manage from your dashboard.
+                </p>
+              </div>
+
+              {/* 3-Step Guide */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Step 1 */}
+                <Card className="border-primary/30">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
+                        1
+                      </div>
+                      <CardTitle className="text-lg">Generate API Key</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Navigate to your <Link href="/dashboard/my-keys" className="text-primary hover:underline font-medium">Dashboard</Link> and click "Create New Key". 
+                      Select the API you want to access and set any required permissions.
+                    </p>
+                    <div className="bg-muted/50 p-3 rounded-md">
+                      <code className="text-xs text-foreground">sk_live_1234567890abcdef</code>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Step 2 */}
+                <Card className="border-primary/30">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
+                        2
+                      </div>
+                      <CardTitle className="text-lg">Add to HTML Form</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Include your API key in the request headers when making API calls from your HTML form or JavaScript.
+                    </p>
+                    <div className="bg-muted/50 p-3 rounded-md overflow-x-auto">
+                      <pre className="text-xs text-foreground">
+{`<script>
+  fetch('/gateway/api-slug', {
+    headers: {
+      'X-API-Key': 'your-key'
+    }
+  })
+</script>`}
+                      </pre>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Step 3 */}
+                <Card className="border-primary/30">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
+                        3
+                      </div>
+                      <CardTitle className="text-lg">Make API Calls</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Send requests to the API endpoint through our gateway. Monitor usage and view analytics in your dashboard.
+                    </p>
+                    <div className="bg-muted/50 p-3 rounded-md">
+                      <code className="text-xs text-foreground">
+                        POST https://api.portsmith.dev/gateway/weather-api
+                      </code>
+                    </div>
+                    <Button asChild size="sm" className="w-full mt-2">
+                      <Link href="/dashboard">
+                        Go to Dashboard
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Additional Info */}
+              <div className="bg-muted/30 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <ExternalLink className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium mb-1">Need More Help?</p>
+                    <p className="text-sm text-muted-foreground">
+                      Check out our detailed guides for each API below, or visit our{' '}
+                      <Link href="/contact?type=api" className="text-primary hover:underline font-medium">
+                        support page
+                      </Link>{' '}
+                      to request a new API integration.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Loading State */}
           {isLoading && (
             <div className="flex justify-center items-center py-20">
@@ -93,10 +212,18 @@ export default function DocsPage() {
             </Card>
           )}
 
+          {/* Available APIs Section */}
+          {!isLoading && !error && Object.keys(groupedApis).length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">Available APIs</h2>
+              <p className="text-muted-foreground mb-8">Browse and explore our collection of integrated APIs</p>
+            </div>
+          )}
+
           {!isLoading && !error && Object.entries(groupedApis).map(([category, apis]) => (
             <div key={category} className="mb-12">
               <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-2xl font-bold">{category}</h2>
+                <h3 className="text-2xl font-bold">{category}</h3>
                 <Badge variant="secondary">{apis.length}</Badge>
               </div>
               

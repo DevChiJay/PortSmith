@@ -155,7 +155,7 @@ function Hero() {
                       <span className="text-gray-300">(</span>
                     </div>
                     <div className="text-green-400 ml-4">
-                      'https://api.portsmith.dev/v1/users'
+                      'https://api.portsmith.dev/gateway/api-slug'
                       <span className="text-gray-300">,</span>
                     </div>
                     <div className="text-gray-400 ml-4">
@@ -190,7 +190,7 @@ function Hero() {
                       <span className="text-gray-300">.</span>
                       <span className="text-yellow-300">json</span>
                       <span className="text-gray-300">()</span>
-                      <span className="text-green-500 ml-2">✓</span>
+                      <span className="text-blue-400 ml-2">✓</span>
                     </div>
                   </motion.div>
                 </div>

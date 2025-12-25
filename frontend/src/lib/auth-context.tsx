@@ -79,8 +79,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (error) => {
         const originalRequest = error.config
 
-        // If 401 and we haven't retried yet
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Don't try to refresh tokens for auth endpoints (login, register, refresh)
+        const isAuthEndpoint = originalRequest.url?.includes('/api/auth/login') ||
+                               originalRequest.url?.includes('/api/auth/register') ||
+                               originalRequest.url?.includes('/api/auth/refresh')
+
+        // If 401 and we haven't retried yet and it's not an auth endpoint
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
           originalRequest._retry = true
 
           try {

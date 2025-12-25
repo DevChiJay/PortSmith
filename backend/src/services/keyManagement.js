@@ -20,7 +20,10 @@ class KeyManagementService {
       const User = require('../models/User');
       const user = await User.findById(userId);
       if (!user) {
-        throw new Error('User not found');
+        const error = new Error('User not found');
+        error.statusCode = 404;
+        error.code = 'USER_NOT_FOUND';
+        throw error;
       }
 
       // Count existing active keys for this user
@@ -31,13 +34,19 @@ class KeyManagementService {
 
       // Enforce key limits: max 2 for regular users, unlimited for pro
       if (!user.isPro && existingKeysCount >= 2) {
-        throw new Error('Free users are limited to 2 API keys. Upgrade to Pro for unlimited keys.');
+        const error = new Error('Free users are limited to 2 API keys. Upgrade to Pro for unlimited keys.');
+        error.statusCode = 403;
+        error.code = 'KEY_LIMIT_EXCEEDED';
+        throw error;
       }
 
       // Validate API exists
       const api = await ApiCatalog.findById(keyData.apiId);
       if (!api) {
-        throw new Error(`API with ID ${keyData.apiId} not found`);
+        const error = new Error(`API with ID ${keyData.apiId} not found`);
+        error.statusCode = 404;
+        error.code = 'API_NOT_FOUND';
+        throw error;
       }
 
       // Generate a unique key
@@ -59,7 +68,10 @@ class KeyManagementService {
 
       return apiKey;
     } catch (error) {
-      logger.error('Error generating API key:', error);
+      // Only log errors that don't have status codes (unexpected errors)
+      if (!error.statusCode) {
+        logger.error('Error generating API key:', error);
+      }
       throw error;
     }
   }

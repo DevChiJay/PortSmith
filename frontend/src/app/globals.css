@@ -10,21 +10,21 @@
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 123 61% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 214 100% 64%;
+    --primary-foreground: 255 0% 100%;
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 20%;
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
-    --accent: 150 15% 75%;
+    --accent: 213 70% 85%;
     --accent-foreground: 0 0% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 123 61% 50%;
+    --ring: 213 94% 78%;
     --radius: 0.5rem;
-    --success: 150 20% 70%;
+    --success: 213 94% 78%;
     --success-foreground: 0 0% 10%;
   }
 
@@ -35,21 +35,21 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 98%;
-    --primary: 123 61% 50%;
-    --primary-foreground: 0 0% 5%;
+    --primary: 214 100% 64%;
+    --primary-foreground: 255 0% 100%;
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 60%;
-    --accent: 150 15% 30%;
+    --accent: 213 70% 40%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
     --ring: 0 0% 80%;
-    --success: 150 20% 35%;
-    --success-foreground: 0 0% 98%;
+    --success: 213 94% 78%;
+    --success-foreground: 0 0% 5%;
   }
 }
 
@@ -118,9 +118,9 @@
 }
 
 /* Elegant button transitions */
-.btn-transition {
-  @apply transition-all duration-200 ease-in-out;
-}
+.
+
+
 
 /* ============================================
    PREMIUM LANDING PAGE STYLES

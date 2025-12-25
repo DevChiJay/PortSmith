@@ -143,7 +143,7 @@ export function RequestApiModal({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+              <CheckCircle className="h-5 w-5 text-blue-400 mr-2" />
               API Key Created Successfully
             </DialogTitle>
             <DialogDescription>
@@ -153,7 +153,7 @@ export function RequestApiModal({
           </DialogHeader>
 
           <div className="space-y-4 py-3">
-            <Card className="border-green-200 bg-green-50 dark:bg-green-900/10">
+            <Card className="border-blue-300 bg-blue-50 dark:bg-blue-900/10">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">API Key</CardTitle>
               </CardHeader>

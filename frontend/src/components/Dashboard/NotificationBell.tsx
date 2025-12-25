@@ -42,7 +42,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
       case 'error':
         return <AlertCircle className="h-4 w-4 text-red-600" />;
       case 'success':
-        return <Check className="h-4 w-4 text-green-600" />;
+        return <Check className="h-4 w-4 text-blue-400" />;
       default:
         return <Info className="h-4 w-4 text-blue-600" />;
     }
@@ -139,7 +139,7 @@ function NotificationItem({
       case 'error':
         return <AlertCircle className="h-4 w-4 text-red-600" />;
       case 'success':
-        return <Check className="h-4 w-4 text-green-600" />;
+        return <Check className="h-4 w-4 text-blue-400" />;
       default:
         return <Info className="h-4 w-4 text-blue-600" />;
     }

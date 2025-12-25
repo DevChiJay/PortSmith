@@ -129,9 +129,9 @@ export default function ContactPage() {
                 )}
 
                 {success && (
-                  <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
-                    <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    <AlertDescription className="text-green-600 dark:text-green-400">
+                  <Alert className="border-blue-300 bg-blue-50 dark:bg-blue-950">
+                    <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertDescription className="text-blue-600 dark:text-blue-400">
                       Message sent successfully! We'll get back to you soon.
                     </AlertDescription>
                   </Alert>

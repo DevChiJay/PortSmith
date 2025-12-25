@@ -13,13 +13,13 @@ function FAQ() {
       className="py-16 px-4 bg-background rounded-3xl mx-4 md:mx-10 my-6"
       id="faq"
     >
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Find answers to common questions about our API platform
+          <p className="text-muted-foreground">
+            Common questions about PortSmith API Gateway
           </p>
         </div>
 
@@ -27,71 +27,51 @@ function FAQ() {
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger>
-                Do I need a backend to use this?
+                How do I get started with an API?
               </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  No, our API platform is designed to be used with any frontend
-                  technology. You can use our client SDKs for direct API access
-                  without needing your own backend. However, for sensitive
-                  operations and handling authentication tokens securely, we
-                  recommend using a backend to protect your API keys.
+                  Simply sign up for a free account, browse our available APIs, and generate an API key for the service you want to use. You can then start making requests immediately using your key in the X-API-Key header.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-2">
-              <AccordionTrigger>Is it really free?</AccordionTrigger>
+              <AccordionTrigger>What APIs are available?</AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  Yes, we offer a free tier for all our APIs with reasonable
-                  rate limits for development and small-scale projects. For
-                  higher volume usage and premium features, we offer paid plans
-                  that scale with your needs. Check our pricing page for more
-                  details on limits and features.
+                  We offer a variety of APIs including weather services, AI tools, image processing, and more. Visit our documentation page to see the complete list of available APIs with interactive documentation. Don't see what you need? Request a new API integration through our contact form.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-3">
-              <AccordionTrigger>Can I customize the form?</AccordionTrigger>
+              <AccordionTrigger>Is there a free tier?</AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  Our API platform provides full customization options. You can
-                  customize the request parameters, authentication methods, and
-                  response formats. We also provide SDKs in multiple languages
-                  that make it easy to integrate our APIs into your applications
-                  with your own UI elements.
+                  Yes! We offer a generous free tier for all APIs with reasonable rate limits perfect for development and testing. Check the pricing page for specific limits and premium features available in paid plans.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-4">
               <AccordionTrigger>
-                How do I contact the people who sign up?
+                How do I monitor my API usage?
               </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  When users register for your API services through our
-                  platform, you'll receive notifications and can access their
-                  contact information through the dashboard. Our platform also
-                  provides analytics on API usage and tools for communicating
-                  with your users about updates or issues.
+                  Your dashboard provides real-time analytics showing request counts, response times, and error rates. You can track usage across all your API keys and receive notifications when approaching rate limits.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-5">
               <AccordionTrigger>
-                Is there a limit to how many signups I can collect?
+                Can I request a new API integration?
               </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  On our free tier, there's a limit of 1,000 user signups per
-                  month. Our paid plans offer higher or unlimited signup
-                  capacities depending on the tier. You can always upgrade as
-                  your needs grow, and we provide tools to manage and scale your
-                  user base effectively.
+                  Absolutely! We're always looking to expand our API offerings. Use the "Request API" button in the navigation or dashboard to submit your request. We review all submissions and prioritize based on community demand.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -100,10 +80,10 @@ function FAQ() {
 
         <div className="text-center pt-8">
           <p className="text-muted-foreground mb-4">
-            Still have questions? We're here to help.
+            Still have questions?
           </p>
           <Button asChild>
-            <Link href="/docs">Visit Documentation</Link>
+            <Link href="/contact">Contact Support</Link>
           </Button>
         </div>
       </div>

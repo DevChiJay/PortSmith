@@ -27,7 +27,7 @@ export function SuccessAnimation({ size = 64, className }: SuccessAnimationProps
     >
       <CheckCircle2 
         size={size} 
-        className="text-green-600" 
+        className="text-blue-400" 
         strokeWidth={2}
       />
     </motion.div>

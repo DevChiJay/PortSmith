@@ -174,6 +174,22 @@ exports.generateKey = async (req, res) => {
       expiresAt: newKey.expiresAt
     });
   } catch (error) {
+    // Handle expected errors with status codes
+    if (error.statusCode) {
+      // Log operational errors at appropriate level
+      if (error.code === 'KEY_LIMIT_EXCEEDED') {
+        logger.info(`User ${req.user.id} attempted to exceed API key limit`);
+      } else {
+        logger.warn(`${error.code || 'Error'} in generateKey: ${error.message}`);
+      }
+      
+      return res.status(error.statusCode).json({
+        error: error.code || 'Error',
+        message: error.message
+      });
+    }
+    
+    // Log unexpected errors
     logger.error('Error generating API key:', error);
     res.status(500).json({
       error: 'Internal Server Error',

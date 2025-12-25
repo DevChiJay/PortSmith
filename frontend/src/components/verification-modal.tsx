@@ -59,15 +59,15 @@ export function VerificationModal({ isOpen, onClose, email }: VerificationModalP
 
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-4 w-4 mt-0.5 text-green-500 flex-shrink-0" />
+              <CheckCircle className="h-4 w-4 mt-0.5 text-blue-400 flex-shrink-0" />
               <p>Click the verification link in the email to activate your account</p>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-4 w-4 mt-0.5 text-green-500 flex-shrink-0" />
+              <CheckCircle className="h-4 w-4 mt-0.5 text-blue-400 flex-shrink-0" />
               <p>The link will expire in 24 hours</p>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-4 w-4 mt-0.5 text-green-500 flex-shrink-0" />
+              <CheckCircle className="h-4 w-4 mt-0.5 text-blue-400 flex-shrink-0" />
               <p>Check your spam folder if you don't see the email</p>
             </div>
           </div>

@@ -14,7 +14,7 @@ function CTA() {
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Join thousands of developers building with our API platform
+          Join developers using PortSmith to simplify API management
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <Button size="lg" className="px-8 btn-transition" asChild>
@@ -28,7 +28,7 @@ function CTA() {
             className="px-8 btn-transition"
             asChild
           >
-            <a href="mailto:support@devchihub.com">Contact Us</a>
+            <Link href="/contact?type=api">Request API</Link>
           </Button>
         </div>
       </div>

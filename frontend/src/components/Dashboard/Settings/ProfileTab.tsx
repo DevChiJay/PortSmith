@@ -117,7 +117,7 @@ export function ProfileTab({
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Verification:</span>
                   {user?.is_verified ? (
-                    <span className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded">
+                    <span className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded">
                       <CheckCircle2 className="h-3 w-3" />
                       Verified
                     </span>

@@ -39,6 +39,7 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
   const [selectedApiId, setSelectedApiId] = useState(preSelectedApiId || '');
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<{ message: string; isKeyLimit: boolean } | null>(null);
 
   const { data: apisData, isLoading: apisLoading } = useApiData<{ apis: any[] }>({
     endpoint: '/api/apis',
@@ -55,6 +56,7 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
   const handleCreateKey = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
+    setError(null); // Clear previous errors
 
     try {
       const response = await axiosInstance.post('/api/keys', {
@@ -70,7 +72,19 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
         toast.success('API key created successfully!');
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to create API key');
+      const errorMessage = err.response?.data?.message || 'Failed to create API key';
+      const errorCode = err.response?.data?.error;
+      
+      // Check if it's a key limit error
+      if (errorCode === 'KEY_LIMIT_EXCEEDED') {
+        setError({ message: errorMessage, isKeyLimit: true });
+        toast.error(errorMessage, {
+          duration: 6000,
+        });
+      } else {
+        setError({ message: errorMessage, isKeyLimit: false });
+        toast.error(errorMessage);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -80,6 +94,7 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
     setKeyName('');
     setSelectedApiId(preSelectedApiId || '');
     setCreatedKey(null);
+    setError(null); // Clear errors on close
     setCopied(false);
     onOpenChange(false);
     if (createdKey) {
@@ -107,6 +122,19 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
+              {error && (
+                <Alert variant={error.isKeyLimit ? "default" : "destructive"} className={error.isKeyLimit ? "border-amber-500 bg-amber-50 dark:bg-amber-950" : ""}>
+                  <AlertTriangle className={`h-4 w-4 ${error.isKeyLimit ? "text-amber-600 dark:text-amber-400" : ""}`} />
+                  <AlertDescription className={error.isKeyLimit ? "text-amber-600 dark:text-amber-400" : ""}>
+                    <strong>{error.isKeyLimit ? 'Upgrade Required:' : 'Error:'}</strong> {error.message}
+                    {error.isKeyLimit && (
+                      <span className="block mt-1 text-sm">
+                        Consider upgrading to Pro to create unlimited API keys.
+                      </span>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="grid w-full items-center gap-2">
                 <Label htmlFor="name">
                   Key Name <span className="text-red-500">*</span>
@@ -192,7 +220,7 @@ export function CreateKeyDialog({ open, onOpenChange, preSelectedApiId, onSucces
                     onClick={handleCopyKey}
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
+                      <Check className="h-4 w-4 text-blue-400" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}
