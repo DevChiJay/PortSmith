@@ -21,12 +21,14 @@ import {
 export function Sidebar() {
   return (
     <aside className="hidden md:flex md:w-64 h-screen flex-col bg-background border-r shadow-sm">
+      <Link href={'/'}>
       <div className="p-4 flex items-center gap-2 border-b">
         <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-          <span className="text-sm font-bold text-primary-foreground">API</span>
+          <span className="text-sm font-bold text-primary-foreground">PS</span>
         </div>
-        <span className="font-semibold text-lg">DevChi</span>
+        <span className="font-semibold text-lg">Portsmith</span>
       </div>
+      </Link>
       
       <ScrollArea className="flex-grow px-3 py-4">
         <nav className="flex flex-col gap-1">

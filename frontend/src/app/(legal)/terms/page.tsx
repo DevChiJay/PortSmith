@@ -104,7 +104,7 @@ export default function TermsPage() {
             
             <h2>13. Contact Information</h2>
             <p>
-              If you have any questions about these Terms, please contact us at support@devchi.io.
+              If you have any questions about these Terms, please contact us at support@devchi.me.
             </p>
           </div>
         </div>

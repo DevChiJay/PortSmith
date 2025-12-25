@@ -120,7 +120,7 @@ export default function PrivacyPage() {
             
             <h2>11. Contact Us</h2>
             <p>
-              If you have any questions about this Privacy Policy, please contact us at privacy@devchi.io.
+              If you have any questions about this Privacy Policy, please contact us at support@devchi.me
             </p>
           </div>
         </div>

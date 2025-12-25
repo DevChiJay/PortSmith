@@ -6,10 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { Menu, X } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
+import { useAuth } from '@/lib/auth-context';
 
 export default function ScrollNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,16 +64,28 @@ export default function ScrollNavbar() {
                 {/* CTA Buttons */}
                 <div className="hidden md:flex items-center gap-3">
                   <ModeToggle />
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/login">Sign In</Link>
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900"
-                    asChild
-                  >
-                    <Link href="/signup">Get Started</Link>
-                  </Button>
+                  {isAuthenticated ? (
+                    <Button 
+                      size="sm" 
+                      className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900"
+                      asChild
+                    >
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/login">Sign In</Link>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900"
+                        asChild
+                      >
+                        <Link href="/signup">Get Started</Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -109,20 +123,32 @@ export default function ScrollNavbar() {
                           <span className="text-sm font-medium">Theme</span>
                           <ModeToggle />
                         </div>
-                        <Link
-                          href="/login"
-                          className="block px-4 py-2 text-sm font-medium text-center rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          Sign In
-                        </Link>
-                        <Link
-                          href="/signup"
-                          className="block px-4 py-2 text-sm font-medium text-center rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900 transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          Get Started
-                        </Link>
+                        {isAuthenticated ? (
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-sm font-medium text-center rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900 transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            Dashboard
+                          </Link>
+                        ) : (
+                          <>
+                            <Link
+                              href="/login"
+                              className="block px-4 py-2 text-sm font-medium text-center rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              Sign In
+                            </Link>
+                            <Link
+                              href="/signup"
+                              className="block px-4 py-2 text-sm font-medium text-center rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900 transition-colors"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              Get Started
+                            </Link>
+                          </>
+                        )}
                       </div>
                     </div>
                   </motion.div>

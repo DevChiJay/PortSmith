@@ -24,9 +24,9 @@ export function MobileNav() {
 
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-xs font-bold text-primary-foreground">API</span>
+            <span className="text-xs font-bold text-primary-foreground">PS</span>
           </div>
-          <span className="font-semibold">DevChi</span>
+          <span className="font-semibold">Portsmith</span>
         </div>
 
         <MobileUserMenu />
@@ -35,9 +35,9 @@ export function MobileNav() {
       <SheetContent side="left" className="w-[240px] sm:w-[280px] p-0">
         <div className="px-2 py-4 flex items-center gap-2 border-b">
           <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center ml-2">
-            <span className="text-xs font-bold text-primary-foreground">API</span>
+            <span className="text-xs font-bold text-primary-foreground">PS</span>
           </div>
-          <span className="font-semibold">DevChi</span>
+          <span className="font-semibold">Portsmith</span>
         </div>
 
         <ScrollArea className="h-[calc(100vh-60px)]">
