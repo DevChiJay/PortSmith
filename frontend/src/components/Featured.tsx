@@ -22,7 +22,6 @@ import {
   CardTitle,
 } from "./ui/card";
 import { useApiData } from "../hooks/use-api-data";
-import { RequestApiModal } from "./request-api-modal";
 
 // Define a type for the API data
 type Api = {
@@ -45,27 +44,19 @@ function Featured() {
   const { isAuthenticated } = useAuth();
   const isSignedIn = isAuthenticated;
   const router = useRouter();
-  const { data, isLoading, error } = useApiData<Api[]>({
-    endpoint: "/api/apis/featured",
-    fallbackData: [],
+  
+  // Fetch all APIs and filter for featured ones
+  const { data, isLoading, error } = useApiData<{ apis: Api[] }>({
+    endpoint: "/api/apis",
+    fallbackData: { apis: [] },
   });
 
-  const featuredApis = data?.featured || [];
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedApiId, setSelectedApiId] = useState<string | undefined>(undefined);
-
-  const handleRequestApi = (api: Api) => {
-    if (isSignedIn) {
-      setSelectedApiId(api.id);
-      setModalOpen(true);
-    } else {
-      router.push("/login");
-    }
-  };
+  // Filter for featured APIs
+  // Filter for featured APIs
+  const featuredApis = data?.apis?.filter((api: any) => api.featured === true) || [];
 
   return (
-    <>
-      <section className="py-16 px-4 container max-w-6xl">
+    <section className="py-16 px-4 container max-w-6xl">
         <div className="mb-12 text-center">
           <Badge variant="outline" className="mb-3 px-3 py-1 text-sm">
             Featured
@@ -118,21 +109,14 @@ function Featured() {
                     </CardHeader>
                     <CardFooter className="flex gap-3 pt-2">
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
                         className="flex-1 btn-transition"
                         asChild
                       >
                         <Link href={`/docs/${api.slug}`}>
-                          <FileText className="h-4 w-4 mr-1" /> Documentation
+                          View Documentation <ArrowRight className="h-4 w-4 ml-2" />
                         </Link>
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 btn-transition"
-                        onClick={() => handleRequestApi(api)}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" /> Request API
                       </Button>
                     </CardFooter>
                   </Card>
@@ -154,15 +138,7 @@ function Featured() {
           </>
         )}
       </section>
-
-      <RequestApiModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        selectedApiId={selectedApiId}
-        availableApis={featuredApis}
-      />
-    </>
-  );
-}
+    );
+  }
 
 export default Featured;

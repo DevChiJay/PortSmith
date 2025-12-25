@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApiData } from "@/hooks/use-api-data";
 import { ChevronLeft } from "lucide-react";
+import "swagger-ui-react/swagger-ui.css";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
