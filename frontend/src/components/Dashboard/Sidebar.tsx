@@ -1,6 +1,6 @@
 'use client'
 
-import { Key, Library, Settings, Home, LogOut } from "lucide-react";
+import { Key, Library, Settings, Home, LogOut, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { ModeToggle } from "@/components/mode-toggle";
@@ -51,6 +51,11 @@ export function Sidebar() {
               text: "New",
               variant: "default"
             }}
+          />
+          <NavLink 
+            href="/contact?type=api" 
+            icon={<Plus className="mr-3 h-4 w-4" />}
+            label="Request API"
           />
           
           <div className="my-4 px-4 text-xs text-muted-foreground font-medium uppercase tracking-wider">

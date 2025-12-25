@@ -3,6 +3,9 @@ const router = express.Router();
 const apisController = require('../controllers/apisControllers');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
+// Submit contact form (public endpoint)
+router.post('/contact', apisController.submitContactForm);
+
 // Get all available APIs (public endpoint)
 router.get('/', apisController.getAllApis);
 

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, AlertCircle, CheckCircle2, Mail, MessageSquare, User } from 'lucide-react'
+import { Loader2, AlertCircle, CheckCircle2, Mail, MessageSquare, User, FileText } from 'lucide-react'
 import ScrollNavbar from '@/components/scroll-navbar'
 import Footer from '@/components/Footer'
 import axios from 'axios'
@@ -18,14 +18,25 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export default function ContactPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
-  const [sendTo, setSendTo] = useState('support@portsmith.dev')
+  const [sendTo, setSendTo] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Pre-populate form from URL parameters
+  useEffect(() => {
+    const requestType = searchParams.get('type')
+    if (requestType === 'api') {
+      setSubject('API Request')
+      setMessage(`Hello PortSmith Team,\n\nI would like to request the following API to be added to your platform:\n\nAPI Name: [Enter API name here]\n\nAPI Description: [Brief description of what this API does]\n\nAPI Documentation URL (if available): [Enter URL here]\n\nUse Case: [Explain how you plan to use this API]\n\nThank you for considering my request!\n\nBest regards`)
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,9 +67,10 @@ export default function ContactPage() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post(`${API_URL}/api/contact`, {
+      const response = await axios.post(`${API_URL}/api/apis/contact`, {
         name: name.trim(),
         email: email.trim(),
+        subject: subject.trim() || undefined,
         message: message.trim(),
         sendTo: sendTo.trim()
       })
@@ -67,6 +79,7 @@ export default function ContactPage() {
       // Clear form
       setName('')
       setEmail('')
+      setSubject('')
       setMessage('')
       
       // Optionally redirect after success
@@ -155,6 +168,22 @@ export default function ContactPage() {
                     disabled={isLoading || success}
                     required
                     autoComplete="email"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="subject" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Subject (Optional)
+                  </Label>
+                  <Input
+                    id="subject"
+                    type="text"
+                    placeholder="What is this about?"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    disabled={isLoading || success}
+                    autoComplete="off"
                   />
                 </div>
 

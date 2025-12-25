@@ -24,6 +24,7 @@ export default function ScrollNavbar() {
   const navLinks = [
     { href: '/docs', label: 'Documentation' },
     { href: '/pricing', label: 'Pricing' },
+    { href: '/contact?type=api', label: 'Request API' },
     { href: '/contact', label: 'Contact' },
   ];
 

@@ -2,6 +2,7 @@ const ApiCatalog = require('../models/ApiCatalog');
 const logger = require('../utils/logger');
 const apiConfigService = require('../config/apis');
 const apiCatalogPersistenceService = require('../services/apiCatalogPersistenceService');
+const { sendContactEmail } = require('../utils/emailService');
 
 // Get all available APIs
 exports.getAllApis = async (req, res) => {
@@ -405,6 +406,70 @@ exports.getApiBySlug = async (req, res) => {
     res.status(500).json({
       error: 'Internal Server Error',
       message: 'Failed to retrieve API'
+    });
+  }
+};
+
+// Submit contact form
+exports.submitContactForm = async (req, res) => {
+  try {
+    const { name, email, message, sendTo, subject } = req.body;
+
+    // Validation
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Name, email, and message are required'
+      });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Invalid email address'
+      });
+    }
+
+    // Validate name length
+    if (name.trim().length < 2) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Name must be at least 2 characters long'
+      });
+    }
+
+    // Validate message length
+    if (message.trim().length < 10) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Message must be at least 10 characters long'
+      });
+    }
+
+    // Send email
+    const defaultRecipient = process.env.CONTACT_EMAIL;
+    const emailResult = await sendContactEmail(
+      name.trim(),
+      email.trim(),
+      message.trim(),
+      sendTo?.trim() || defaultRecipient,
+      subject?.trim() || null
+    );
+
+    logger.info(`Contact form submission from ${email} processed successfully`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Your message has been sent successfully. We will get back to you soon!',
+      simulated: emailResult.simulated || false
+    });
+  } catch (error) {
+    logger.error('Error processing contact form:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to send your message. Please try again later.'
     });
   }
 };

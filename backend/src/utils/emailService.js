@@ -266,7 +266,102 @@ const sendPasswordResetEmail = async (email, fullName, resetToken) => {
   }
 };
 
+/**
+ * Send contact form submission email
+ * @param {string} senderName - Name of the person sending the message
+ * @param {string} senderEmail - Email of the person sending the message
+ * @param {string} message - The contact message
+ * @param {string} sendTo - Email address to send the contact form to (default: support email)
+ * @param {string} subject - Optional custom subject line
+ */
+const sendContactEmail = async (senderName, senderEmail, message, sendTo = FROM_EMAIL, subject = null) => {
+  const emailSubject = subject || `New Contact Form Submission from ${senderName}`;
+  
+  const mailOptions = {
+    from: `"${APP_NAME} Contact Form" <${FROM_EMAIL}>`,
+    to: sendTo,
+    replyTo: senderEmail,
+    subject: emailSubject,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Contact Form Submission</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">New Contact Form Submission</h1>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+            <h2 style="color: #333; margin-top: 0;">Contact Details</h2>
+            
+            <div style="background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+              <p style="margin: 5px 0;"><strong>Name:</strong> ${senderName}</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${senderEmail}" style="color: #667eea;">${senderEmail}</a></p>
+              ${subject ? `<p style="margin: 5px 0;"><strong>Subject:</strong> ${subject}</p>` : ''}
+              <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+            </div>
+            
+            <h3 style="color: #333;">Message:</h3>
+            <div style="background: white; padding: 20px; border-radius: 5px; border-left: 4px solid #667eea;">
+              <p style="margin: 0; white-space: pre-wrap;">${message}</p>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center;">
+              <p style="font-size: 14px; color: #777; margin: 0;">
+                This message was sent via the ${APP_NAME} contact form.
+              </p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px; padding: 20px; color: #999; font-size: 12px;">
+            <p>© ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+      New Contact Form Submission
+      
+      Name: ${senderName}
+      Email: ${senderEmail}
+      ${subject ? `Subject: ${subject}\n` : ''}      Date: ${new Date().toLocaleString()}
+      
+      Message:
+      ${message}
+      
+      ---
+      This message was sent via the ${APP_NAME} contact form.
+      © ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+    `
+  };
+
+  try {
+    if (!transporter) {
+      // Simulate email sending for development
+      logger.info('EMAIL SIMULATION MODE - Contact Form');
+      logger.info(`From: ${senderName} <${senderEmail}>`);
+      logger.info(`To: ${sendTo}`);
+      logger.info(`Subject: ${mailOptions.subject}`);
+      logger.info(`Message: ${message}`);
+      logger.info('Email would have been sent in production mode.');
+      return { success: true, simulated: true };
+    }
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Contact form email sent from ${senderEmail} to ${sendTo}: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    logger.error(`Failed to send contact form email from ${senderEmail}:`, error);
+    throw new Error('Failed to send contact form email');
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendContactEmail
 };
