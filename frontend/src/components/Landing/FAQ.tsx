@@ -4,8 +4,8 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../components/ui/accordion";
-import { Button } from "./ui/button";
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 
 function FAQ() {
   return (

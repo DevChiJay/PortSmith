@@ -1,4 +1,4 @@
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 function Metrics() {
   return (
@@ -14,11 +14,11 @@ function Metrics() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
         <div>
-          <p className="text-4xl font-bold text-primary">100+</p>
+          <p className="text-4xl font-bold text-primary">20+</p>
           <p className="text-muted-foreground mt-2">Active APIs</p>
         </div>
         <div>
-          <p className="text-4xl font-bold text-primary">5k+</p>
+          <p className="text-4xl font-bold text-primary">150+</p>
           <p className="text-muted-foreground mt-2">Developers</p>
         </div>
         <div>

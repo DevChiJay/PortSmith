@@ -2,8 +2,8 @@
 
 import Head from "next/head";
 import Link from "next/link";
-import ScrollNavbar from "@/components/scroll-navbar";
-import Footer from "@/components/Footer";
+import ScrollNavbar from "@/components/Landing/scroll-navbar";
+import Footer from "@/components/Landing/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

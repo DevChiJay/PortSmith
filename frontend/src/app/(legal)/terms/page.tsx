@@ -22,21 +22,24 @@ export default function TermsPage() {
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-            <p className="text-muted-foreground">Last Updated: May 1, 2025</p>
+            <p className="text-muted-foreground">Last Updated: December 26, 2025</p>
           </div>
           
           <div className="prose dark:prose-invert max-w-none">
             <h2>1. Introduction</h2>
             <p>
-              Welcome to Portsmith. By accessing or using our platform, website, and services, 
-              you agree to be bound by these Terms of Service. Please read them carefully before using our services.
+              Welcome to PortSmith, an API developer portal and unified gateway platform built by Devchi Digital Ltd. 
+              By accessing or using our platform, website, and services, you agree to be bound by these Terms of Service. 
+              Please read them carefully before using our services.
             </p>
             
             <h2>2. Definitions</h2>
             <p>
-              "Platform" refers to Portsmith, accessible from our website and related applications.
-              "Services" means the API services, documentation, and related tools we provide.
+              "Platform" refers to PortSmith, accessible from our website and related applications.
+              "Services" means the API gateway, developer portal, API catalog, documentation, key management, 
+              rate limiting, analytics, and related tools we provide.
               "User", "you", and "your" refers to individuals or entities using our services.
+              "Provider" refers to Devchi Digital Ltd, the company operating PortSmith.
             </p>
             
             <h2>3. Account Registration</h2>
@@ -48,8 +51,10 @@ export default function TermsPage() {
             
             <h2>4. API Usage and Rate Limits</h2>
             <p>
-              Our services are provided with specific rate limits and usage restrictions as documented in our API documentation. 
-              You agree not to exceed these limits or attempt to circumvent any restrictions in place.
+              PortSmith provides a unified API gateway with configurable rate limits and usage restrictions for each API 
+              in our catalog. Free users have limited API key quotas and rate limits, while Pro users receive enhanced limits. 
+              You agree not to exceed these limits or attempt to circumvent any restrictions in place. Specific limits are 
+              documented in our API documentation and your dashboard.
             </p>
             
             <h2>5. Security and API Keys</h2>
@@ -104,7 +109,8 @@ export default function TermsPage() {
             
             <h2>13. Contact Information</h2>
             <p>
-              If you have any questions about these Terms, please contact us at support@devchi.me.
+              PortSmith is built and operated by Devchi Digital Ltd. If you have any questions about these Terms, 
+              please contact us at support@devchi.me.
             </p>
           </div>
         </div>
@@ -113,7 +119,7 @@ export default function TermsPage() {
       <footer className="border-t py-6 bg-background">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © 2025 Devchi Digital. All rights reserved.
+            © 2025 Devchi Digital Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

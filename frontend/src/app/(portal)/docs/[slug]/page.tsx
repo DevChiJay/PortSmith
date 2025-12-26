@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ApiSkeleton } from "@/components/ApiDocs/ApiSkeleton";
 import { ApiDocsViewer } from "@/components/ApiDocs/ApiDocsViewer";
-import ScrollNavbar from "@/components/scroll-navbar";
+import ScrollNavbar from "@/components/Landing/scroll-navbar";
 
 interface ApiDocumentation {
   slug: string;

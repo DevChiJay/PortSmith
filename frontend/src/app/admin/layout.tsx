@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 
 import { ModeToggle } from "@/components/mode-toggle"
-import AdminSidebar from "@/components/admin-sidebar"
+import AdminSidebar from "@/components/Admin/admin-sidebar"
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (

@@ -10,11 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle } from 'lucide-react'
-import { VerificationModal } from '@/components/verification-modal'
-import { GoogleSignInButton } from '@/components/google-signin-button'
-import { GitHubSignInButton } from '@/components/github-signin-button'
-import ScrollNavbar from '@/components/scroll-navbar'
-import Footer from '@/components/Footer'
+import { VerificationModal } from '@/components/Auth/verification-modal'
+import { GoogleSignInButton } from '@/components/Auth/google-signin-button'
+import { GitHubSignInButton } from '@/components/Auth/github-signin-button'
+import ScrollNavbar from '@/components/Landing/scroll-navbar'
+import Footer from '@/components/Landing/Footer'
 
 export default function SignUpPage() {
   const router = useRouter()

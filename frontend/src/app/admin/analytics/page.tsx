@@ -13,9 +13,9 @@ import { PageTransition } from '@/components/PageTransition';
 import { exportAnalytics } from '@/utils/export';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { StatCard } from '@/components/admin/StatCard';
-import { ActivityStats } from '@/components/admin/ActivityStats';
-import { ApiPerformance } from '@/components/admin/ApiPerformance';
+import { StatCard } from '@/components/Admin/StatCard';
+import { ActivityStats } from '@/components/Admin/ActivityStats';
+import { ApiPerformance } from '@/components/Admin/ApiPerformance';
 
 export default function AdminAnalyticsPage() {
   const [dateRange, setDateRange] = useState('30');

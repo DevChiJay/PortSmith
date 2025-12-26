@@ -22,14 +22,15 @@ export default function PrivacyPage() {
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-            <p className="text-muted-foreground">Last Updated: May 1, 2025</p>
+            <p className="text-muted-foreground">Last Updated: December 26, 2025</p>
           </div>
           
           <div className="prose dark:prose-invert max-w-none">
             <h2>1. Introduction</h2>
             <p>
-              At Portsmith, we take your privacy seriously. This Privacy Policy explains how we collect, 
-              use, disclose, and safeguard your information when you use our platform and services.
+              At PortSmith, operated by Devchi Digital Ltd, we take your privacy seriously. This Privacy Policy 
+              explains how we collect, use, disclose, and safeguard your information when you use our API gateway 
+              platform, developer portal, and related services.
             </p>
             
             <h2>2. Information We Collect</h2>
@@ -41,8 +42,9 @@ export default function PrivacyPage() {
                 <strong>Personal Data:</strong> Name, email address, company name, and other contact information you provide us.
               </li>
               <li>
-                <strong>Usage Data:</strong> Information about how you use our API services, including API requests, frequency, 
-                errors, and performance metrics.
+                <strong>Usage Data:</strong> Information about how you use our API gateway services, including API requests, 
+                frequency, endpoints accessed, response times, errors, rate limit hits, and performance metrics for analytics 
+                and service improvement.
               </li>
               <li>
                 <strong>Technical Data:</strong> IP addresses, browser type and version, time zone setting, operating system, 
@@ -55,12 +57,13 @@ export default function PrivacyPage() {
               We use the information we collect for various purposes, including:
             </p>
             <ul>
-              <li>To provide and maintain our services</li>
-              <li>To notify you about changes to our services</li>
-              <li>To provide customer support</li>
-              <li>To gather analysis or valuable information to improve our services</li>
-              <li>To monitor the usage of our services</li>
-              <li>To detect, prevent, and address technical issues</li>
+              <li>To provide and maintain our API gateway and developer portal services</li>
+              <li>To manage your API keys and monitor usage against rate limits</li>
+              <li>To notify you about changes to our services, APIs, or your account status</li>
+              <li>To provide customer support and respond to your inquiries</li>
+              <li>To gather analytics and metrics to improve our services and API catalog</li>
+              <li>To monitor the usage and performance of our gateway services</li>
+              <li>To detect, prevent, and address technical issues, security threats, and abuse</li>
             </ul>
             
             <h2>4. Data Security</h2>
@@ -72,9 +75,10 @@ export default function PrivacyPage() {
             
             <h2>5. API Keys and Authentication</h2>
             <p>
-              API keys are used to authenticate requests to our API services. It is your responsibility to keep your API 
-              keys secure. Do not share your API keys in publicly accessible areas such as GitHub, client-side code, or 
-              blog posts.
+              API keys generated through PortSmith are used to authenticate and route requests through our API gateway. 
+              It is your responsibility to keep your API keys secure. Do not share your API keys in publicly accessible 
+              areas such as GitHub, client-side code, or blog posts. We log API key usage for analytics, rate limiting, 
+              and security purposes, but never expose your keys to third parties.
             </p>
             
             <h2>6. Data Retention</h2>
@@ -120,7 +124,8 @@ export default function PrivacyPage() {
             
             <h2>11. Contact Us</h2>
             <p>
-              If you have any questions about this Privacy Policy, please contact us at support@devchi.me
+              PortSmith is built and operated by Devchi Digital Ltd. If you have any questions about this Privacy Policy, 
+              please contact us at support@devchi.me
             </p>
           </div>
         </div>
@@ -129,7 +134,7 @@ export default function PrivacyPage() {
       <footer className="border-t py-6 bg-background">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © 2025 Devchi Digital. All rights reserved.
+            © 2025 Devchi Digital Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

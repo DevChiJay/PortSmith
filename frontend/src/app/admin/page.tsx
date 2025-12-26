@@ -2,15 +2,15 @@
 
 import { useAdminMetrics, useApisAnalytics } from '@/hooks/use-admin-metrics';
 import { useActivityLog } from '@/hooks/use-activity-log';
-import { Users, Key, TrendingUp, CheckCircle2, Activity, Plus, Settings } from 'lucide-react';
+import { Users, Key, TrendingUp, CheckCircle2, Activity, Plus, Settings, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertCircle } from '@/components/ui/alert';
-import { StatCard } from '@/components/admin/StatCard';
-import { TopApis } from '@/components/admin/TopApis';
-import { RecentActivity } from '@/components/admin/RecentActivity';
-import { SystemStatus } from '@/components/admin/SystemStatus';
-import { QuickActions } from '@/components/admin/QuickActions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { StatCard } from '@/components/Admin/StatCard';
+import { TopApis } from '@/components/Admin/TopApis';
+import { RecentActivity } from '@/components/Admin/RecentActivity';
+import { SystemStatus } from '@/components/Admin/SystemStatus';
+import { QuickActions } from '@/components/Admin/QuickActions';
 
 export default function AdminDashboard() {
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useAdminMetrics();

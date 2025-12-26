@@ -8,10 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { EditKeyDialog } from '@/components/admin/EditKeyExpiryDialog';
-import { DeleteKeyDialog } from '@/components/admin/DeleteKeyDialog';
-import { SearchFilters } from '@/components/admin/SearchFilters';
-import { ApiKeysTableRow } from '@/components/admin/ApiKeysTableRow';
+import { EditKeyDialog } from '@/components/Admin/EditKeyExpiryDialog';
+import { DeleteKeyDialog } from '@/components/Admin/DeleteKeyDialog';
+import { SearchFilters } from '@/components/Admin/SearchFilters';
+import { ApiKeysTableRow } from '@/components/Admin/ApiKeysTableRow';
 import type { ApiKey } from '@/app/admin/types';
 
 export default function AdminApiKeysPage() {

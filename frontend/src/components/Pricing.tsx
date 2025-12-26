@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 
 function Pricing() {
   return (

@@ -1,14 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import ScrollNavbar from "../components/scroll-navbar";
-import Hero from "../components/Hero";
-import Featured from "../components/Featured";
-import CTA from "../components/CTA";
-import Benefits from "../components/Benefits";
-import Metrics from "../components/Metrics";
-import FAQ from "../components/FAQ";
-import Footer from "../components/Footer";
+import ScrollNavbar from "@/components/Landing/scroll-navbar";
+import Hero from "@/components/Landing/Hero";
+import Featured from "@/components/Landing/Featured";
+import CTA from "@/components/Landing/CTA";
+import Benefits from "@/components/Landing/Benefits";
+import Metrics from "@/components/Landing/Metrics";
+import FAQ from "@/components/Landing/FAQ";
+import Footer from "@/components/Landing/Footer";
 
 export default function Home() {
   return (

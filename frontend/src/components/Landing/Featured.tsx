@@ -12,16 +12,16 @@ import {
   FileText,
   ExternalLink,
 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { useApiData } from "../hooks/use-api-data";
+} from "@/components/ui/card";
+import { useApiData } from "@/hooks/use-api-data";
 
 // Define a type for the API data
 type Api = {

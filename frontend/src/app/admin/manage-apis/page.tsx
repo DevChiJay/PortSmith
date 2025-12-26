@@ -30,9 +30,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { AddApiDialog } from '@/components/admin/AddApiDialog';
-import { EditApiDialog } from '@/components/admin/EditApiDialog';
-import { DeleteApiDialog } from '@/components/admin/DeleteApiDialog';
+import { AddApiDialog } from '@/components/Admin/AddApiDialog';
+import { EditApiDialog } from '@/components/Admin/EditApiDialog';
+import { DeleteApiDialog } from '@/components/Admin/DeleteApiDialog';
 import { mutate } from 'swr';
 
 interface Api {

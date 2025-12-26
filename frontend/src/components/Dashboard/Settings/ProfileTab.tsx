@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { User, Mail, Phone, Shield, CheckCircle2, Loader2 } from 'lucide-react';
-import { AvatarUpload } from '@/components/avatar-upload';
+import { AvatarUpload } from '@/components/Dashboard/Settings/avatar-upload';
 
 interface ProfileTabProps {
   user: any;

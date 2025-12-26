@@ -16,9 +16,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EditUserDialog } from '@/components/admin/EditUserDialog';
-import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
-import { UsersTableRow } from '@/components/admin/UsersTableRow';
+import { EditUserDialog } from '@/components/Admin/EditUserDialog';
+import { DeleteUserDialog } from '@/components/Admin/DeleteUserDialog';
+import { UsersTableRow } from '@/components/Admin/UsersTableRow';
 import type { User } from '@/app/admin/types';
 import { Filter } from 'lucide-react';
 
