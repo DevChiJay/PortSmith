@@ -60,7 +60,7 @@ class KeyManagementService {
         name: keyData.name || `${api.name} Key`,
         permissions: keyData.permissions || ['read'],
         rateLimit: keyData.rateLimit || api.defaultRateLimit,
-        expiresAt: keyData.expiresAt || null,
+        ...(keyData.expiresAt && { expiresAt: keyData.expiresAt }),
       });
 
       await apiKey.save();
