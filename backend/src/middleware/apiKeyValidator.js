@@ -8,8 +8,8 @@ const logger = require('../utils/logger');
  */
 const validateApiKey = async (req, res, next) => {
   try {
-    // Extract API key from request headers
-    const apiKey = req.headers['x-api-key'];
+    // Extract API key from request headers (support both header names)
+    const apiKey = req.headers['x-portsmith-key'] || req.headers['x-api-key'];
     
     if (!apiKey) {
       return res.status(401).json({

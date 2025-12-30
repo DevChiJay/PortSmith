@@ -45,68 +45,87 @@ const externalApiSources = [
     icon: '☀️',
     color: '#FFA500',
     visibility: 'public',
-    enabled: true // Enabled for testing
+    enabled: false // Enabled for testing
   },
 
   // Example 2: Monorepo FastAPI with multiple products
   {
-    name: 'AI Services Suite',
-    slug: 'ai-services', // Parent slug for the monorepo
-    liveUrl: 'https://ai.example.com',
-    docsUrl: 'https://ai.example.com/docs',
-    gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:4000',
-    pathPrefix: '/gateway/ai', // Parent path prefix (not used directly, but required for validation)
+    name: 'API HQ Suite',
+    slug: 'api-hq-services', // Parent slug for the monorepo
+    liveUrl: 'http://localhost:8000',
+    docsUrl: 'http://localhost:8000/docs',
+    gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:5001',
+    pathPrefix: '/gateway/api-hq', // Parent path prefix (not used directly, but required for validation)
     // This will be fetched once and sliced into multiple products
     fetchOnce: true,
     products: [
       {
-        name: 'Text Analysis API',
-        slug: 'text-analysis',
-        pathPrefix: '/gateway/text-analysis',
-        category: 'AI & Machine Learning',
+        name: 'Contact Form API',
+        slug: 'contact-us',
+        pathPrefix: '/gateway/contact-us',
+        category: 'General',
         featured: true,
         pricing: {
-          free: { maxRequests: 50, period: '1 day' },
-          pro: { maxRequests: 5000, period: '1 day', price: 49 }
+          free: { maxRequests: 10, period: '1 hour' },
+          pro: { maxRequests: 100, period: '1 hour', price: 49 }
         },
-        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 50 },
-        icon: '📝',
+        rateLimit: { windowMs: 60 * 60 * 1000, max: 10 },
+        icon: '📩',
         color: '#4A90E2',
         visibility: 'public',
-        // Filter by tags (FastAPI tags)
-        tags: ['text', 'nlp', 'sentiment']
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['Contact']
       },
       {
-        name: 'Image Processing API',
-        slug: 'image-processing',
-        pathPrefix: '/gateway/image-processing',
-        category: 'AI & Machine Learning',
-        featured: false,
-        pricing: {
-          free: { maxRequests: 25, period: '1 day' },
-          pro: { maxRequests: 2500, period: '1 day', price: 79 }
-        },
-        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 25 },
-        icon: '🖼️',
-        color: '#E94E77',
-        visibility: 'public',
-        // Filter by path prefixes
-        pathPrefixes: ['/image', '/vision']
-      },
-      {
-        name: 'Voice Recognition API',
-        slug: 'voice-recognition',
-        pathPrefix: '/gateway/voice',
-        category: 'AI & Machine Learning',
+        name: 'Email Sorter API',
+        slug: 'email-sorter',
+        pathPrefix: '/gateway/email-sorter',
+        category: 'General',
         featured: true,
         pricing: {
-          pro: { maxRequests: 1000, period: '1 month', price: 99 }
+          free: { maxRequests: 10, period: '1 hour' },
+          pro: { maxRequests: 100, period: '1 hour', price: 49 }
         },
-        rateLimit: { windowMs: 30 * 24 * 60 * 60 * 1000, max: 1000 },
-        icon: '🎤',
-        color: '#9B59B6',
-        visibility: 'private', // Pro only
-        tags: ['voice', 'audio', 'speech']
+        rateLimit: { windowMs: 60 * 60 * 1000, max: 10 },
+        icon: '📧',
+        color: '#4A90E2',
+        visibility: 'public',
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['Email Sorter']
+      },
+      {
+        name: 'AI Summarizer',
+        slug: 'summarizer',
+        pathPrefix: '/gateway/summarizer',
+        category: 'AI Integration',
+        featured: true,
+        pricing: {
+          free: { maxRequests: 10, period: '1 day' },
+          pro: { maxRequests: 100, period: '1 day', price: 49 }
+        },
+        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
+        icon: '🤖',
+        color: '#4A90E2',
+        visibility: 'public',
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['AI Summarizer']
+      },
+      {
+        name: 'Voice Bot AI',
+        slug: 'voice-bot',
+        pathPrefix: '/gateway/voice-bot',
+        category: 'AI Integration',
+        featured: true,
+        pricing: {
+          free: { maxRequests: 1, period: '1 day' },
+          pro: { maxRequests: 20, period: '1 day', price: 49 }
+        },
+        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
+        icon: '🔉',
+        color: '#4A90E2',
+        visibility: 'public',
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['Voice Bot']
       }
     ],
     auth: {

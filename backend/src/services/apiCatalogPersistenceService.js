@@ -99,7 +99,7 @@ class ApiCatalogPersistenceService {
       slug: config.slug,
       description: config.description || transformedSpec.info?.description || '',
       category: config.category || 'General',
-      baseUrl: config.gatewayUrl,
+      baseUrl: config.liveUrl,
       documentation: config.docsUrl,
       specData: transformedSpec,
       mode: 'openapi',

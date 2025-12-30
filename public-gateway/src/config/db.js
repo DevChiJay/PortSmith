@@ -8,6 +8,14 @@ const connectDB = async () => {
       // MongoDB driver options
     });
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
+    
+    // Register all models to avoid MissingSchemaError
+    // Models must be registered before they can be referenced in populate()
+    require('../models/User');
+    require('../models/ApiCatalog');
+    require('../models/ApiKey');
+    require('../models/UsageLog');
+    
   } catch (error) {
     logger.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1);
