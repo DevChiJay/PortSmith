@@ -114,7 +114,7 @@ export function DocView({ apiDoc, specData }: DocViewProps) {
                 <SwaggerUI 
                   spec={specData || {}} 
                   docExpansion="list"
-                  defaultModelsExpandDepth={1}
+                  defaultModelsExpandDepth={-1}
                   displayRequestDuration={true}
                   filter={true}
                   showRequestHeaders={true}
