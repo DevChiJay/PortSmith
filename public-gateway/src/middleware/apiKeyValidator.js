@@ -19,7 +19,9 @@ const validateApiKey = async (req, res, next) => {
     }
 
     // Find the API key in the database
-    const keyDoc = await ApiKey.findOne({ key: apiKey }).populate('apiId');
+    const keyDoc = await ApiKey.findOne({ key: apiKey })
+      .populate('apiId')
+      .populate('userId'); // Populate user to check isPro status
     
     if (!keyDoc) {
       logger.warn(`Invalid API key attempt: ${apiKey}`);
@@ -64,12 +66,15 @@ const validateApiKey = async (req, res, next) => {
     req.apiKey = {
       id: keyDoc._id,
       key: keyDoc.key,
-      userId: keyDoc.userId, // This should be a Clerk user ID
+      userId: keyDoc.userId._id,
       apiId: keyDoc.apiId._id,
       api: keyDoc.apiId,
       permissions: keyDoc.permissions,
       rateLimit: rateLimit
     };
+    
+    // Attach user info for isPro checking in rate limiter
+    req.user = keyDoc.userId;
 
     next();
   } catch (error) {

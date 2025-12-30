@@ -31,12 +31,7 @@ class ApiConfigService {
         apiMap[api.slug] = {
           visibility: api.visibility || 'public',
           baseUrl: api.baseUrl,
-          requiresAuth: api.gatewayConfig?.requiresAuth ?? true,
-          rateLimit: {
-            windowMs: api.gatewayConfig?.rateLimit?.windowMs ?? 60 * 60 * 1000,
-            max: api.gatewayConfig?.rateLimit?.max ?? 100
-          },
-          headers: api.gatewayConfig?.headers || {},
+          pricing: api.pricing || {},
           endpoints: api.endpoints || []
         };
       });

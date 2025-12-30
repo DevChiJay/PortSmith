@@ -6,6 +6,31 @@ const logger = require('../utils/logger');
 const rateLimitStores = {};
 
 /**
+ * Parse period string (e.g., "1 hour", "1 day", "30 days") to milliseconds
+ * @param {string} period - Period string to parse
+ * @returns {number} - Period in milliseconds
+ */
+const parsePeriod = (period) => {
+  if (!period || typeof period !== 'string') return null;
+  
+  const match = period.trim().match(/^(\d+)\s*(hour|day|week|month|year)s?$/i);
+  if (!match) return null;
+  
+  const value = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+  
+  const multipliers = {
+    hour: 60 * 60 * 1000,
+    day: 24 * 60 * 60 * 1000,
+    week: 7 * 24 * 60 * 60 * 1000,
+    month: 30 * 24 * 60 * 60 * 1000,
+    year: 365 * 24 * 60 * 60 * 1000
+  };
+  
+  return value * (multipliers[unit] || 0);
+};
+
+/**
  * Creates a rate limiter based on API key settings
  * @param {Object} options - Rate limit options
  * @returns {Function} Express middleware
@@ -55,37 +80,116 @@ const createRateLimiter = (options = {}) => {
 const dynamicLimiterCache = {};
 
 /**
- * Dynamic rate limiter middleware that uses the API key's rate limit settings
+ * Dynamic rate limiter middleware that uses both API pricing limits and API key limits
+ * Enforces the most restrictive limit between:
+ * 1. API-level pricing (pricing.free or pricing.pro based on user.isPro)
+ * 2. API key-level rate limit (apiKey.rateLimit)
  */
-const dynamicRateLimiter = (req, res, next) => {
+const dynamicRateLimiter = async (req, res, next) => {
   // If no API key on request, use default rate limits
-  if (!req.apiKey || !req.apiKey.rateLimit) {
+  if (!req.apiKey || !req.apiKey.api) {
     return createRateLimiter()(req, res, next);
   }
 
-  // Get rate limit settings from the API key
-  const { requests, per } = req.apiKey.rateLimit;
+  const api = req.apiKey.api;
+  const apiKeyRateLimit = req.apiKey.rateLimit;
   
-  // Log the rate limit settings for debugging
-  logger.debug(`API key ${req.apiKey.key} rate limit: ${requests} requests per ${per}ms`);
+  // Determine which pricing tier to use based on user's isPro status
+  let apiPricingLimit = null;
   
-  // Create a cache key based on the rate limit settings
-  const cacheKey = `${req.apiKey.key}_${requests}_${per}`;
+  if (req.user && req.user.isPro && api.pricing && api.pricing.pro) {
+    // User is pro, use pro tier limits
+    const proPeriod = parsePeriod(api.pricing.pro.period);
+    if (api.pricing.pro.maxRequests && proPeriod) {
+      apiPricingLimit = {
+        requests: api.pricing.pro.maxRequests,
+        per: proPeriod
+      };
+      logger.debug(`Using pro tier for API ${api.slug}: ${apiPricingLimit.requests} requests per ${apiPricingLimit.per}ms`);
+    }
+  } else if (api.pricing && api.pricing.free) {
+    // Use free tier limits
+    const freePeriod = parsePeriod(api.pricing.free.period);
+    if (api.pricing.free.maxRequests && freePeriod) {
+      apiPricingLimit = {
+        requests: api.pricing.free.maxRequests,
+        per: freePeriod
+      };
+      logger.debug(`Using free tier for API ${api.slug}: ${apiPricingLimit.requests} requests per ${apiPricingLimit.per}ms`);
+    }
+  }
   
-  // Use cached limiter or create a new one
-  if (!dynamicLimiterCache[cacheKey]) {
-    logger.debug(`Creating new rate limiter for key: ${req.apiKey.key}`);
-    dynamicLimiterCache[cacheKey] = createRateLimiter({
-      windowMs: per,
-      max: requests
+  // Determine the most restrictive limit
+  // We need to check both API-level pricing limits AND API key limits
+  const limits = [];
+  
+  // Add API pricing limit if available
+  if (apiPricingLimit) {
+    limits.push({
+      type: 'api-pricing',
+      requests: apiPricingLimit.requests,
+      per: apiPricingLimit.per
     });
   }
-
-  // Apply the cached rate limiter
-  return dynamicLimiterCache[cacheKey](req, res, next);
+  
+  // Add API key limit
+  if (apiKeyRateLimit && apiKeyRateLimit.requests && apiKeyRateLimit.per) {
+    limits.push({
+      type: 'api-key',
+      requests: apiKeyRateLimit.requests,
+      per: apiKeyRateLimit.per
+    });
+  }
+  
+  // If no limits found, use default
+  if (limits.length === 0) {
+    logger.debug(`No rate limits configured, using defaults for key: ${req.apiKey.key}`);
+    return createRateLimiter()(req, res, next);
+  }
+  
+  // Apply all limits by chaining them
+  // This ensures both API-level and key-level limits are enforced
+  let currentIndex = 0;
+  
+  const applyNextLimit = (req, res, next) => {
+    if (currentIndex >= limits.length) {
+      return next();
+    }
+    
+    const limit = limits[currentIndex];
+    currentIndex++;
+    
+    logger.debug(`Checking ${limit.type} limit: ${limit.requests} requests per ${limit.per}ms for key: ${req.apiKey.key}`);
+    
+    // Create cache key for this specific limit
+    const cacheKey = `${req.apiKey.key}_${limit.type}_${limit.requests}_${limit.per}`;
+    
+    // Use cached limiter or create a new one
+    if (!dynamicLimiterCache[cacheKey]) {
+      logger.debug(`Creating new ${limit.type} rate limiter for key: ${req.apiKey.key}`);
+      dynamicLimiterCache[cacheKey] = createRateLimiter({
+        windowMs: limit.per,
+        max: limit.requests,
+        handler: (req, res) => {
+          logger.warn(`${limit.type} rate limit exceeded for key: ${req.apiKey.key} (${limit.requests} requests per ${limit.per}ms)`);
+          return res.status(429).json({
+            error: 'Too Many Requests',
+            message: `Rate limit exceeded: ${limit.type} allows ${limit.requests} requests per ${limit.per}ms`
+          });
+        }
+      });
+    }
+    
+    // Apply this limit and continue to next
+    return dynamicLimiterCache[cacheKey](req, res, () => applyNextLimit(req, res, next));
+  };
+  
+  // Start applying limits
+  applyNextLimit(req, res, next);
 };
 
 module.exports = {
   createRateLimiter,
-  dynamicRateLimiter
+  dynamicRateLimiter,
+  parsePeriod
 };

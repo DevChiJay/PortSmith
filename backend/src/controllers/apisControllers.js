@@ -103,7 +103,7 @@ exports.getApiByIdOrSlug = async (req, res) => {
       endpoints: api.endpoints,
       documentation: api.documentation,
       authType: api.authType,
-      defaultRateLimit: api.defaultRateLimit
+      pricing: api.pricing
     });
   } catch (error) {
     logger.error(`Error fetching API ${req.params.idOrSlug}:`, error);
@@ -130,8 +130,8 @@ exports.addApi = async (req, res) => {
       endpoints,
       documentation,
       authType,
-      defaultRateLimit,
-      visibility
+      visibility,
+      pricing
     } = req.body;
     
     // Validation
@@ -161,8 +161,8 @@ exports.addApi = async (req, res) => {
       endpoints: endpoints || [],
       documentation,
       authType: authType || 'apiKey',
-      defaultRateLimit,
-      visibility: visibility || 'public'
+      visibility: visibility || 'public',
+      pricing: pricing || {}
     });
     
     await newApi.save();
@@ -202,9 +202,9 @@ exports.updateApi = async (req, res) => {
       endpoints,
       documentation,
       authType,
-      defaultRateLimit,
       isActive,
-      visibility
+      visibility,
+      pricing
     } = req.body;
     
     const api = await ApiCatalog.findById(apiId);
@@ -223,9 +223,9 @@ exports.updateApi = async (req, res) => {
     if (endpoints) api.endpoints = endpoints;
     if (documentation) api.documentation = documentation;
     if (authType) api.authType = authType;
-    if (defaultRateLimit) api.defaultRateLimit = defaultRateLimit;
     if (isActive !== undefined) api.isActive = isActive;
     if (visibility) api.visibility = visibility;
+    if (pricing) api.pricing = pricing;
     
     api.updatedAt = Date.now();
     
