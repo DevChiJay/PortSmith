@@ -52,9 +52,9 @@ const externalApiSources = [
   {
     name: 'API HQ Suite',
     slug: 'api-hq-services', // Parent slug for the monorepo
-    liveUrl: 'http://localhost:8000',
-    docsUrl: 'http://localhost:8000/docs',
-    gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:5001',
+    liveUrl: process.env.API_HQ_URL,
+    docsUrl: `${process.env.API_HQ_URL}/docs`,
+    gatewayUrl: process.env.GATEWAY_BASE_URL,
     pathPrefix: '/api-hq', // Parent path prefix (not used directly, but required for validation)
     // This will be fetched once and sliced into multiple products
     fetchOnce: true,
@@ -138,7 +138,7 @@ const externalApiSources = [
           pro: { maxRequests: 20, period: '1 day', price: 49 }
         },
         rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
-        icon: '🔉',
+        icon: '🖼️',
         color: '#4A90E2',
         visibility: 'public',
         // Filter by tags (FastAPI tags) - must match FastAPI tag casing
@@ -155,7 +155,7 @@ const externalApiSources = [
           pro: { maxRequests: 2000, period: '1 day', price: 49 }
         },
         rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
-        icon: '🔉',
+        icon: '🖼️',
         color: '#4A90E2',
         visibility: 'public',
         // Filter by tags (FastAPI tags) - must match FastAPI tag casing
