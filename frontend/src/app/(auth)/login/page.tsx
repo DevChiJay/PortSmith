@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
@@ -18,7 +18,7 @@ import axios from 'axios'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/dashboard'
@@ -99,10 +99,8 @@ export default function LoginPage() {
   const isSubmitDisabled = isLoading || authLoading || !email || !password
 
   return (
-    <>
-      <ScrollNavbar />
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
-        <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
+      <div className="w-full max-w-md">
           {/* Page Header */}
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold mb-2 text-gray-800 dark:text-white">Welcome Back</h1>
@@ -223,7 +221,20 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
-    <Footer />
-    </>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <>
+      <ScrollNavbar />
+      <Suspense fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }>
+        <LoginForm />
+      </Suspense>
+      <Footer />    </>
   )
 }
