@@ -39,7 +39,7 @@ app.get('/health', (req, res) => {
 
 // Gateway routes
 const gatewayRoutes = require('./routes/gateway');
-app.use('/gateway', gatewayRoutes);
+app.use(gatewayRoutes);
 
 // 404 handler
 app.use((req, res) => {

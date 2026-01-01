@@ -29,7 +29,7 @@ Each API source can be configured as either:
   liveUrl: 'https://api.example.com',    // Base URL of the FastAPI service
   docsUrl: 'https://api.example.com/docs', // Swagger UI URL
   gatewayUrl: 'http://localhost:4000',   // PortSmith gateway base
-  pathPrefix: '/gateway/weather',         // Gateway path prefix
+  pathPrefix: '/weather',         // Gateway path prefix
   category: 'Data & Analytics',           // API category
   featured: true,                         // Show on featured list
   pricing: {                              // Pricing tiers
@@ -68,7 +68,7 @@ For a single FastAPI service that you want to split into multiple API products:
     {
       name: 'Text Analysis API',
       slug: 'text-analysis',
-      pathPrefix: '/gateway/text-analysis',
+      pathPrefix: '/text-analysis',
       category: 'AI & Machine Learning',
       tags: ['text', 'nlp', 'sentiment'], // Filter by FastAPI tags
       // ... other product config
@@ -76,7 +76,7 @@ For a single FastAPI service that you want to split into multiple API products:
     {
       name: 'Image Processing API',
       slug: 'image-processing',
-      pathPrefix: '/gateway/image-processing',
+      pathPrefix: '/image-processing',
       pathPrefixes: ['/image', '/vision'], // Filter by path prefixes
       // ... other product config
     }
@@ -176,7 +176,7 @@ externalApiSourceService.logSummary();
 - `name` - Display name of the API
 - `slug` - Unique URL-friendly identifier
 - `gatewayUrl` - PortSmith gateway base URL
-- `pathPrefix` - Gateway path prefix (e.g., `/gateway/weather`)
+- `pathPrefix` - Gateway path prefix (e.g., `/weather`)
 
 ### Optional Fields
 

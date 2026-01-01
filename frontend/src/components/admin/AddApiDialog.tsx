@@ -155,7 +155,7 @@ export function AddApiDialog({ onSuccess }: AddApiDialogProps) {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Used in gateway URL: /gateway/{formData.slug || 'slug'}/
+                Used in gateway URL: /{formData.slug || 'slug'}/
               </p>
             </div>
             <div className="grid gap-2">

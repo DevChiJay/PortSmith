@@ -117,7 +117,7 @@ app.get('/api/docs', (req, res) => {
         'DELETE /api/admin/users/:id': 'Delete user (requires admin auth)'
       },
       gateway: {
-        'ALL /gateway/:apiName/*': 'Make requests to external APIs (requires API key)'
+        'ALL /:apiName/*': 'Make requests to external APIs (requires API key)'
       }
     }
   });

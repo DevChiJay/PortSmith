@@ -17,7 +17,7 @@ const externalApiSources = [
     liveUrl: 'https://weather-api.example.com',
     docsUrl: 'https://weather-api.example.com/docs',
     gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:4000',
-    pathPrefix: '/gateway/weather',
+    pathPrefix: '/weather',
     category: 'Data & Analytics',
     featured: true,
     pricing: {
@@ -55,14 +55,14 @@ const externalApiSources = [
     liveUrl: 'http://localhost:8000',
     docsUrl: 'http://localhost:8000/docs',
     gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:5001',
-    pathPrefix: '/gateway/api-hq', // Parent path prefix (not used directly, but required for validation)
+    pathPrefix: '/api-hq', // Parent path prefix (not used directly, but required for validation)
     // This will be fetched once and sliced into multiple products
     fetchOnce: true,
     products: [
       {
         name: 'Contact Form API',
         slug: 'contact-us',
-        pathPrefix: '/gateway/contact-us',
+        pathPrefix: '/contact-us',
         category: 'General',
         featured: true,
         pricing: {
@@ -79,7 +79,7 @@ const externalApiSources = [
       {
         name: 'Email Sorter API',
         slug: 'email-sorter',
-        pathPrefix: '/gateway/email-sorter',
+        pathPrefix: '/email-sorter',
         category: 'General',
         featured: true,
         pricing: {
@@ -96,7 +96,7 @@ const externalApiSources = [
       {
         name: 'AI Summarizer',
         slug: 'summarizer',
-        pathPrefix: '/gateway/summarizer',
+        pathPrefix: '/summarizer',
         category: 'AI Integration',
         featured: true,
         pricing: {
@@ -113,11 +113,11 @@ const externalApiSources = [
       {
         name: 'Voice Bot AI',
         slug: 'voice-bot',
-        pathPrefix: '/gateway/voice-bot',
+        pathPrefix: '/voice-bot',
         category: 'AI Integration',
         featured: true,
         pricing: {
-          free: { maxRequests: 1, period: '1 day' },
+          free: { maxRequests: 2, period: '1 day' },
           pro: { maxRequests: 20, period: '1 day', price: 49 }
         },
         rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
@@ -126,6 +126,40 @@ const externalApiSources = [
         visibility: 'public',
         // Filter by tags (FastAPI tags) - must match FastAPI tag casing
         tags: ['Voice Bot']
+      },
+      {
+        name: 'AI Image Tools',
+        slug: 'image',
+        pathPrefix: '/image',
+        category: 'AI Integration',
+        featured: true,
+        pricing: {
+          free: { maxRequests: 2, period: '1 day' },
+          pro: { maxRequests: 20, period: '1 day', price: 49 }
+        },
+        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
+        icon: '🔉',
+        color: '#4A90E2',
+        visibility: 'public',
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['Image Tools']
+      },
+      {
+        name: 'OG Image Generator',
+        slug: 'og-image',
+        pathPrefix: '/og-image',
+        category: 'Dev Tools',
+        featured: true,
+        pricing: {
+          free: { maxRequests: 100, period: '1 day' },
+          pro: { maxRequests: 2000, period: '1 day', price: 49 }
+        },
+        rateLimit: { windowMs: 24 * 60 * 60 * 1000, max: 10 },
+        icon: '🔉',
+        color: '#4A90E2',
+        visibility: 'public',
+        // Filter by tags (FastAPI tags) - must match FastAPI tag casing
+        tags: ['OG Image']
       }
     ],
     auth: {
@@ -145,7 +179,7 @@ const externalApiSources = [
     liveUrl: null, // No OpenAPI endpoint
     docsUrl: 'https://docs.legacy-api.example.com',
     gatewayUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:4000',
-    pathPrefix: '/gateway/legacy',
+    pathPrefix: '/legacy',
     category: 'Integration',
     featured: false,
     pricing: {

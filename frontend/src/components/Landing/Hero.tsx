@@ -155,7 +155,7 @@ function Hero() {
                       <span className="text-gray-300">(</span>
                     </div>
                     <div className="text-green-400 ml-4">
-                      'https://api.portsmith.dev/gateway/api-slug'
+                      'https://api.portsmith.dev/api-slug'
                       <span className="text-gray-300">,</span>
                     </div>
                     <div className="text-gray-400 ml-4">

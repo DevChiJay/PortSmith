@@ -47,7 +47,7 @@ PORT=5000
 **Auth**: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`  
 **APIs**: `/api/apis` (GET, POST, PUT, DELETE)  
 **Keys**: `/api/keys` (GET, POST, PUT, revoke, metrics)  
-**Gateway**: `/gateway/:apiName/*` (requires API key)
+**Gateway**: `/:apiName/*` (requires API key)
 
 ## License
 

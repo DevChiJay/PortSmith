@@ -21,8 +21,8 @@ const createApiProxy = (apiConfig) => {
     proxyTimeout: 30000,
     pathRewrite: (path, req) => {
       // Remove the API prefix from the path
-      // e.g., /gateway/github/users -> /users
-      const apiPath = req.originalUrl.replace(new RegExp(`^/gateway/${req.params.apiName}`), '');
+      // e.g., /github/users -> /users
+      const apiPath = req.originalUrl.replace(new RegExp(`^/${req.params.apiName}`), '');
       return apiPath;
     },
     onProxyReq: (proxyReq, req, res) => {

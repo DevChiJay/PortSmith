@@ -126,7 +126,7 @@ export default function DocsPage() {
                     <div className="bg-muted/50 p-3 rounded-md overflow-x-auto">
                       <pre className="text-xs text-foreground">
 {`<script>
-  fetch('/gateway/api-slug', {
+  fetch('/api-slug', {
     headers: {
       'X-API-Key': 'your-key'
     }
@@ -153,7 +153,7 @@ export default function DocsPage() {
                     </p>
                     <div className="bg-muted/50 p-3 rounded-md">
                       <code className="text-xs text-foreground">
-                        POST https://api.portsmith.dev/gateway/weather-api
+                        POST https://api.portsmith.dev/weather-api
                       </code>
                     </div>
                     <Button asChild size="sm" className="w-full mt-2">
