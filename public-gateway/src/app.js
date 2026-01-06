@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const logger = require('./utils/logger');
+const sanitizeBody = require('./middleware/sanitizeBody');
 
 const app = express();
 
@@ -20,8 +21,8 @@ app.use(cors({
   credentials: true
 }));
 
-// Body parsing middleware
-app.use(bodyParser.json({ limit: '10mb' }));
+// Body parsing middleware with sanitization for control characters
+app.use(sanitizeBody);
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // HTTP request logging
