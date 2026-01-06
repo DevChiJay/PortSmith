@@ -272,6 +272,32 @@ export default function DocsPage() {
               </div>
             </div>
           ))}
+
+          {/* Video Tutorial */}
+          <Card className="mb-12 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Sparkles className="h-6 w-6 text-primary" />
+                How to Create a Free API Key
+              </CardTitle>
+              <CardDescription className="text-base">
+                Watch this quick tutorial to learn how to create and manage your API keys
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black shadow-2xl">
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/uUq7Y4-xpZw"
+                  title="How to Create a Free API Key"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
       
